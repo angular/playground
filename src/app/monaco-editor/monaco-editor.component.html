@@ -1,0 +1,15 @@
+<div class="monaco-editor-container">
+  <md-tab-group (selectChange)="handleTabChange($event)">
+    <md-tab *ngFor="let tab of tabs"
+            md-on-select="alert(click!);">
+      <ng-template md-tab-label>
+        {{tab.filename | extractFilename}}
+        <md-icon (click)="handleTabClose($event, tab.filename)">clear</md-icon>
+      </ng-template>
+    </md-tab>
+  </md-tab-group>
+  <app-monaco-raw  [value]="fsService.readFile(currentTab.filename)"
+                  [language]="currentTab.editorConfig.language"
+                  (change)="changeEvent($event)">
+  </app-monaco-raw>
+</div>

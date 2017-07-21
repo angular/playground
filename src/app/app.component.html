@@ -1,0 +1,24 @@
+<!--The whole content below can be removed with the new code.-->
+<md-toolbar>
+  <span>{{title}}</span>
+  <span class="fill-remaining-space"></span>
+  <button md-raised-button (click)="compileButtonHandler($event)">Compile</button>
+</md-toolbar>
+
+<md-sidenav-container>
+  <md-sidenav>
+    <app-file-viewer [hierarchicalFs]="fsService.getHierarchicalFs()">
+    </app-file-viewer>
+  </md-sidenav>
+  <div class="container">
+    <div class="half">
+      <app-monaco-editor></app-monaco-editor>
+    </div>
+    <div class="half" #iframeContainer>
+      <iframe></iframe>
+    </div>
+  </div>
+</md-sidenav-container>
+
+<pre class="console" #consoleDrawer>
+</pre>

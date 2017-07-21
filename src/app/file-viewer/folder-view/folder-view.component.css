@@ -1,0 +1,15 @@
+.indent {
+  padding-left: 10px;
+}
+
+.twice {
+  padding-left: 20px;
+}
+
+:host {
+  display: block;
+}
+
+.file {
+  cursor: pointer;
+}

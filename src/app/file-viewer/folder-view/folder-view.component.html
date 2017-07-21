@@ -1,0 +1,9 @@
+<ul *ngIf="folder">
+  <li>{{folder.folderName}}</li>
+  <app-folder-view class="indent twice" *ngFor="let subfolder of folder.subFolders | values" [folder]="subfolder"></app-folder-view>
+  <li class="indent file"
+      *ngFor="let file of folder.subFiles"
+      (click)="fileSelected($event, file)">
+      {{file.fileName | extractFilename}}
+  </li>
+</ul>

@@ -1,0 +1,63 @@
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+app-root {
+  height: 100%;
+}
+
+md-toolbar {
+  height: 5%;
+}
+
+md-sidenav-container {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  height: 80%;
+}
+
+md-sidenav-container md-sidenav {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+  border: 1px solid grey;
+  overflow: scroll;
+}
+
+
+md-sidenav-container div.container {
+  -webkit-flex-grow: 5;
+  flex-grow: 5;
+  display: -webkit-flex;
+  display: flex;
+}
+
+md-sidenav-container div.container div.half {
+  /* -webkit-flex-grow: 1;
+  flex-grow: 1; */
+  border: 1px solid grey;
+  width: 50%;
+  display: flex;
+}
+
+pre.console {
+  width: 100%;
+  border: 1px solid grey;
+  height: 15%;
+  display: block;
+  font-family: monospace;
+}
+
+app-monaco-editor {
+  align-items: stretch;
+  width: 100%;
+}
+
+div.half iframe {
+  height: 100%;
+  width: 100%;
+  border: 1px solid grey;
+}
