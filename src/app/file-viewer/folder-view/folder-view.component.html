@@ -1,9 +1,15 @@
-<ul *ngIf="folder">
-  <li>{{folder.folderName}}</li>
-  <app-folder-view class="indent twice" *ngFor="let subfolder of folder.subFolders | values" [folder]="subfolder"></app-folder-view>
-  <li class="indent file"
-      *ngFor="let file of folder.subFiles"
-      (click)="fileSelected($event, file)">
-      {{file.fileName | extractFilename}}
-  </li>
-</ul>
+<md-list *ngIf="folder" dense>
+  <md-list-item class="folder">
+    <md-icon md-list-icon>folder</md-icon>
+    {{folder.folderName}}
+  </md-list-item>
+  <app-folder-view class="indent twice" *ngFor="let subfolder of folder.subFolders | values"
+                  [folder]="subfolder">
+  </app-folder-view>
+  <md-list-item  class="indent file"
+                  *ngFor="let file of folder.subFiles"
+                  (click)="fileSelected($event, file)">
+    <md-icon md-list-icon>note</md-icon>
+    {{file.fileName | extractFilename}}
+  </md-list-item>
+</md-list>

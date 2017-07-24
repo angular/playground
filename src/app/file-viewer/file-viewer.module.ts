@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {MdIconModule} from '@angular/material';
+import { MdIconModule, MdListModule } from '@angular/material';
 
 import { SharedModule } from '../shared/shared.module';
 
@@ -14,7 +14,8 @@ import { ValuesPipe } from './values.pipe';
   imports: [
     CommonModule,
     MdIconModule,
-    SharedModule
+    SharedModule,
+    MdListModule,
   ],
   declarations: [
     FileViewerComponent,

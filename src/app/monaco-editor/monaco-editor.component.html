@@ -1,5 +1,5 @@
 <div class="monaco-editor-container">
-  <md-tab-group (selectChange)="handleTabChange($event)">
+  <md-tab-group (selectChange)="handleTabChange($event)" [selectedIndex]="currentTabIndex">
     <md-tab *ngFor="let tab of tabs"
             md-on-select="alert(click!);">
       <ng-template md-tab-label>

@@ -21,6 +21,7 @@ export class MonacoEditorComponent implements OnInit {
   @Output() fileChange: EventEmitter<object> = new EventEmitter();
 
   currentTab: TabState;
+  currentTabIndex: number = 0;
 
   tabs: TabState[] = [
     {
@@ -45,6 +46,7 @@ export class MonacoEditorComponent implements OnInit {
       for (let i = 0; i < this.tabs.length; i++) {
         if (this.tabs[i].filename === filename) {
           this.currentTab = this.tabs[i];
+          this.currentTabIndex = i;
           return;
         }
       }
@@ -68,6 +70,7 @@ export class MonacoEditorComponent implements OnInit {
         filename: filename
       });
       this.currentTab = this.tabs[this.tabs.length - 1];
+      this.currentTabIndex = this.tabs.length - 1;
     })
   }
 
