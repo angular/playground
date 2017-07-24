@@ -37,7 +37,7 @@ export class MonacoEditorComponent implements OnInit {
     }
   ]
 
-  constructor(private fsService: VirtualFsService, private tabControlService: TabControlService) {
+  constructor(public fsService: VirtualFsService, private tabControlService: TabControlService) {
     this.currentTab = this.tabs[0];
 
     tabControlService.tabCreated$.subscribe(filename => {

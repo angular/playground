@@ -10,7 +10,6 @@ class BrowserCompilerHost {
   getDefaultLibLocation() { return '/node_modules/typescript/lib/'; }
 
   writeFile(fileName, data, writeByteOrderMark) {
-    console.log(`compiler host: writing ${fileName}`);
     fs.writeFileSync(fileName, data);
   }
 

@@ -94,7 +94,7 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
       typeRoots: ["node_modules/"]
     });
 
-    this.http.get("/assets/compiler/bundles/compiler_bundle.json")
+    this.http.get("/assets/compiler/compiler_bundle.json")
         .toPromise()
         .then(response => {
           let fileSystem = response.json().fileSystem;

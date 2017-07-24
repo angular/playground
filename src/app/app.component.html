@@ -14,7 +14,7 @@
     <div class="half">
       <app-monaco-editor></app-monaco-editor>
     </div>
-    <div class="half" #iframeContainer>
+    <div class="half" #iframeContainer [appUpdateIframe]="generatedBundle">
       <iframe></iframe>
     </div>
   </div>

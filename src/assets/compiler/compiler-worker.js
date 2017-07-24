@@ -25,6 +25,7 @@ function instantiate() {
   // get the compiler dependency bundle
 
   fs.loadFilesIntoFileSystem(JSON.parse(get('/assets/compiler/compiler_bundle.json')));
+
   importScripts('browser-bundle.umd.js');
 }
 
@@ -85,27 +86,11 @@ function compile(fileBundle) {
     }
   }
 
-  console.log(fileBundle);
-
   files = Object.keys(fileBundle);
   for (i in files) {
     var file = fileBundle[files[i]];
     fs.writeFileSync(file.fileName, file.text);
   }
-
-  console.log(fs.vfs);
-
-  // fs.writeFileSync("/component.ts", componentFile);
-
-  // instantiate the main.ts
-  let main_ts_file = `
-    import { platformBrowser } from '@angular/platform-browser';
-    import { MainModuleNgFactory } from './component.ngfactory';
-
-    console.log('Running AOT compiled');
-    platformBrowser().bootstrapModuleFactory(MainModuleNgFactory);
-  `;
-  fs.writeFileSync("/main.ts", main_ts_file);
 
   try {
     // run the compiler
@@ -232,7 +217,6 @@ function makeBundle() {
       // write the created bundle
       fs.writeFileSync("/dist/bundle.js", generated.code);
 
-      // console.log(generated.map);
 
       // now, we're done bundling, so let's generate a virtual file system for
       // only the stuff in dist

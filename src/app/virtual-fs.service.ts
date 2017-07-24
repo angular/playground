@@ -65,16 +65,32 @@ export class MainModule {
 </div>
     `);
 
-    this.writeFile("index.html", `
-    <head>
-      <script type="text/javascript"
-        src='https://unpkg.com/core-js@2.4.1/client/shim.min.js'><\/script>
-      <script type="text/javascript"
-        src="https://unpkg.com/zone.js/dist/zone.js"><\/script>
-    </head>
-      <hello-world-app>
+    this.writeFile("index.html", `<html>
+  <head>
+    <!--
+      The below scripts will be provided in the iframe for you. There is no
+      need to add them in.
+    -->
+
+    <!--<script type="text/javascript"
+      src='https://unpkg.com/core-js@2.4.1/client/shim.min.js'><\/script>-->
+    <!--<script type="text/javascript"
+      src="https://unpkg.com/zone.js/dist/zone.js"><\/script>-->
+  </head>
+  <body>
+    <hello-world-app>
       Loading...
     </hello-world-app>
+  </body>
+</html>
+    `);
+
+    this.writeFile("/main.ts", `
+import { platformBrowser } from '@angular/platform-browser';
+import { MainModuleNgFactory } from './component.ngfactory';
+
+console.log('Running AOT compiled');
+platformBrowser().bootstrapModuleFactory(MainModuleNgFactory);
     `);
   }
 

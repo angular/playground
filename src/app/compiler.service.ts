@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 enum WorkerMessageType {
   COMPILATION_START,
@@ -20,7 +21,7 @@ export class CompilerService {
 
   compilerWorker: Worker;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.compilerWorker = new Worker('/assets/compiler/compiler-worker.js');
     this.compilerWorker.onmessage = this.handleWorkerMessage.bind(this);
   }

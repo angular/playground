@@ -104,7 +104,6 @@ exports.__esModule = true;
 
 exports.vfs = new vfs.FileSystem();
 function writeFileSync(filename, data) {
-    console.log("writing file " + filename);
     exports.vfs.writeFile(filename, data);
 }
 exports.writeFileSync = writeFileSync;
@@ -115,7 +114,8 @@ function loadFilesIntoFileSystem(fileSystemData) {
 }
 exports.loadFilesIntoFileSystem = loadFilesIntoFileSystem;
 function readFileSync(filename) {
-    return exports.vfs.getSourceFile(filename).text;
+    var res = exports.vfs.getSourceFile(filename).text;
+    return res;
 }
 exports.readFileSync = readFileSync;
 function getSourceFile(filename) {

@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
@@ -18,12 +19,14 @@ import { CompilerService } from './compiler.service';
 import { MonacoRawComponent } from './monaco-raw/monaco-raw.component';
 import { FileViewerModule } from './file-viewer/file-viewer.module';
 import { SharedModule } from './shared/shared.module';
+import { UpdateIframeDirective } from './update-iframe.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     MonacoEditorComponent,
     MonacoRawComponent,
+    UpdateIframeDirective,
   ],
   imports: [
     BrowserModule,
@@ -34,6 +37,7 @@ import { SharedModule } from './shared/shared.module';
     FileViewerModule,
     SharedModule,
     MdIconModule,
+    HttpClientModule,
     HttpModule
   ],
   providers: [
