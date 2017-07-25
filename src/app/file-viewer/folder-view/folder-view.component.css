@@ -1,9 +1,5 @@
 .indent {
-  padding-left: 10px;
-}
-
-.twice {
-  padding-left: 20px;
+  margin-left: 10px;
 }
 
 :host {
@@ -12,4 +8,16 @@
 
 .file {
   cursor: pointer;
+}
+
+md-list-item {
+  border-left: 1px solid #ccc;
+}
+
+.container.display {
+  display: block;
+}
+
+.container {
+  display: none;
 }

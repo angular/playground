@@ -10,13 +10,20 @@ export class FolderViewComponent {
 
   @Input() folder: object;
 
-  constructor(private tabControlService: TabControlService) { }
+  display: boolean = true;
+
+  constructor(private tabControlService: TabControlService) {
+    console.log("constructed!", this);
+  }
 
   fileSelected(event, file) {
-    console.log(event);
-    console.log(file);
-
     this.tabControlService.createTab(file.fileName);
+  }
+
+  toggleDisplay() {
+    console.log("toggling!", this.display);
+    this.display = !this.display;
+    console.log("toggled to: ", this.display);
   }
 
 }
