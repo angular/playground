@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { VirtualFsService } from './virtual-fs.service';
 import { CompilerService } from './compiler.service';
+import { MdSnackBar } from '@angular/material';
 
 
 @Component({
@@ -16,17 +17,23 @@ export class AppComponent {
   generatedBundle;
 
   constructor(public fsService: VirtualFsService,
-              private compilerService: CompilerService) { }
+              private compilerService: CompilerService,
+              public snackBar: MdSnackBar) { }
 
 
   compileButtonHandler(event) {
-    this.consoleDrawer.nativeElement.innerText = "Compiling...";
+    this.snackBar.dismiss();
+    this.snackBar.open("Compiling...", "Dismiss");
     this.compilerService.compile(this.fsService.getFsBundle())
       .then((compiled_bundle) => {
         this.generatedBundle = compiled_bundle;
-        this.consoleDrawer.nativeElement.innerText = "Compilation Successful!";
+        this.snackBar.dismiss();
+        this.snackBar.open("Compilation Successful!", "Dismiss");
+
       }).catch((error) => {
         // display the error - replace with injection into an error box
+        // this.snackBar.dismiss();
+        this.snackBar.open("Compilation Failed!", "Dismiss");
         this.consoleDrawer.nativeElement.innerText = error;
       });
   }

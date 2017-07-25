@@ -7,7 +7,8 @@ import { AppComponent } from './app.component';
 
 import {
   MdToolbarModule, MdSidenavModule, MdButtonModule,
-  MdGridListModule, MdTabsModule, MdIconModule
+  MdGridListModule, MdTabsModule, MdIconModule,
+  MdSnackBarModule
 } from '@angular/material';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -33,6 +34,7 @@ import { UpdateIframeDirective } from './update-iframe.directive';
     MdToolbarModule,
     MdButtonModule,
     MdTabsModule,
+    MdSnackBarModule,
     BrowserAnimationsModule,
     FileViewerModule,
     SharedModule,
