@@ -49,6 +49,7 @@ pre.console {
   height: 15%;
   display: block;
   font-family: monospace;
+  overflow: scroll;
 }
 
 app-monaco-editor {

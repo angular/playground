@@ -22,17 +22,13 @@ export class AppComponent {
 
 
   compileButtonHandler(event) {
-    this.snackBar.dismiss();
     this.snackBar.open("Compiling...", "Dismiss");
     this.compilerService.compile(this.fsService.getFsBundle())
       .then((compiled_bundle) => {
         this.generatedBundle = compiled_bundle;
-        this.snackBar.dismiss();
         this.snackBar.open("Compilation Successful!", "Dismiss");
-
       }).catch((error) => {
         // display the error - replace with injection into an error box
-        // this.snackBar.dismiss();
         this.snackBar.open("Compilation Failed!", "Dismiss");
         this.consoleDrawer.nativeElement.innerText = error;
       });
