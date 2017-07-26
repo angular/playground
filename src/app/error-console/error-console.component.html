@@ -1,0 +1,10 @@
+<div>
+  <div *ngFor="let fileErrors of _errorList">
+    <md-list dense>
+      <h3 md-subheader>{{fileErrors.fileName}}</h3>
+      <md-list-item *ngFor="let error of fileErrors.errors">
+        <md-icon>highlight_off</md-icon>{{error.message}} ({{error.lineNumber}}, {{error.characterNumber}})
+      </md-list-item>
+    </md-list>
+  </div>
+</div>

@@ -43,7 +43,7 @@ md-sidenav-container div.container div.half {
   display: flex;
 }
 
-pre.console {
+app-error-console {
   width: 100%;
   border: 1px solid grey;
   height: 15%;

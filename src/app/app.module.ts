@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 import {
   MdToolbarModule, MdSidenavModule, MdButtonModule,
   MdGridListModule, MdTabsModule, MdIconModule,
-  MdSnackBarModule
+  MdSnackBarModule, MdListModule
 } from '@angular/material';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -21,6 +21,7 @@ import { MonacoRawComponent } from './monaco-raw/monaco-raw.component';
 import { FileViewerModule } from './file-viewer/file-viewer.module';
 import { SharedModule } from './shared/shared.module';
 import { UpdateIframeDirective } from './update-iframe.directive';
+import { ErrorConsoleComponent } from './error-console/error-console.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { UpdateIframeDirective } from './update-iframe.directive';
     MonacoEditorComponent,
     MonacoRawComponent,
     UpdateIframeDirective,
+    ErrorConsoleComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,7 +42,8 @@ import { UpdateIframeDirective } from './update-iframe.directive';
     SharedModule,
     MdIconModule,
     HttpClientModule,
-    HttpModule
+    HttpModule,
+    MdListModule
   ],
   providers: [
     VirtualFsService,

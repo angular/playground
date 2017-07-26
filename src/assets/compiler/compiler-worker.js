@@ -77,7 +77,97 @@ function readConfiguration(project, basePath) {
   return { parsed, ngOptions };
 }
 
+function isTsDiagnostics(diagnostics){
+  return diagnostics && diagnostics[0] && (diagnostics[0].file || diagnostics[0].messageText);
+}
+
+const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
+const ERROR_PARSE_ERRORS = 'ngParseErrors';
+
+function syntaxError(msg, parseErrors) {
+  const error = Error(msg);
+  error[ERROR_SYNTAX_ERROR] = true;
+  if (parseErrors) error[ERROR_PARSE_ERRORS] = parseErrors;
+  console.log("created error: ", error);
+  return error;
+}
+
+let api = {
+  "DiagnosticCategory": [
+    "Warning", "Error", "Message"
+  ]
+}
+
+/* TYPESCRIPT SCRIPT PARSING STUFF */
+
+function formatDiagnostics(cwd, diags) {
+  if (diags && diags.length) {
+    console.log("Diags in formatDiagnostics: ", diags);
+
+    let isTsErrors = isTsDiagnostics(diags);
+
+    let errorObject = {};
+    for(let i = 0; i < diags.length; i++) {
+      let diag = diags[i];
+
+      let type, fileName, lineNumber, characterNumber, message;
+
+      if (isTsErrors) {
+        type = "TYPESCRIPT_DIAGNOSTIC_ERROR";
+        fileName = diag.file.path;
+        let {line, character} = ts.getLineAndCharacterOfPosition(diag.file, diag.start);
+        lineNumber = line;
+        characterNumber = character;
+        message = diag.messageText;
+      }
+      else {
+        type = "TEMPLATE_PARSE_ERROR";
+        fileName = lineNumber = characterNumber = "";
+        message = diag.message;
+      }
+
+      if (!errorObject.hasOwnProperty(fileName)) {
+        errorObject[fileName] = [];
+      }
+
+      errorObject[fileName].push({
+        type: type,
+        fileName: fileName,
+        lineNumber: lineNumber,
+        characterNumber: characterNumber,
+        message: message
+      });
+    }
+    console.log(errorObject);
+    return JSON.stringify(errorObject);
+  } else
+    return '';
+}
+
+function handleCompilerError(e) {
+  postMessage({
+    type: COMPILATION_ERROR,
+    data: String(e)
+  });
+}
+
+function check(cwd, ...args) {
+  console.log("args: ", args);
+  if (args.some(diags => !!(diags && diags[0]))) {
+    throw syntaxError(args.map(diags => {
+                            if (diags && diags[0]) {
+                              console.log("Diags in check: ", diags);
+                              return formatDiagnostics(cwd, diags);
+                            }
+                          })
+                          .filter(message => !!message)
+                          .join(''));
+  }
+}
+
 function compile(fileBundle) {
+
+  console.log("running!");
   // delete everything that's not a dependency - gotta do this or weird things happen
   let files = fs.vfs.getFileList();
   for (i in files) {
@@ -94,8 +184,12 @@ function compile(fileBundle) {
 
   try {
     // run the compiler
-    ng.compiler_cli_browser.performCompilation("/", readConfiguration(".", "/"),
-      new BrowserCompilerHost);
+
+    let {parsed, ngOptions} = readConfiguration(".", "/");
+
+    const ngc = ng.compiler_cli_browser;
+    var compilerStatus = ngc.performCompilation("/", parsed.fileNames, parsed.options,
+      ngOptions, handleCompilerError, check, new BrowserCompilerHost);
   } catch(e) {
 
     postMessage({

@@ -13,7 +13,6 @@ export class FolderViewComponent {
   display: boolean = true;
 
   constructor(private tabControlService: TabControlService) {
-    console.log("constructed!", this);
   }
 
   fileSelected(event, file) {
@@ -21,9 +20,7 @@ export class FolderViewComponent {
   }
 
   toggleDisplay() {
-    console.log("toggling!", this.display);
     this.display = !this.display;
-    console.log("toggled to: ", this.display);
   }
 
 }

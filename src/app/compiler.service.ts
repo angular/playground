@@ -47,6 +47,7 @@ export class CompilerService {
   }
 
   compile(filesToCompile) {
+    console.log("Starting compilation!");
     return new Promise((resolve, reject) => {
 
       this.compilerWorker.postMessage({
