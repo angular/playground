@@ -88,7 +88,6 @@ function syntaxError(msg, parseErrors) {
   const error = Error(msg);
   error[ERROR_SYNTAX_ERROR] = true;
   if (parseErrors) error[ERROR_PARSE_ERRORS] = parseErrors;
-  console.log("created error: ", error);
   return error;
 }
 
@@ -102,7 +101,6 @@ let api = {
 
 function formatDiagnostics(cwd, diags) {
   if (diags && diags.length) {
-    console.log("Diags in formatDiagnostics: ", diags);
 
     let isTsErrors = isTsDiagnostics(diags);
 
@@ -119,26 +117,66 @@ function formatDiagnostics(cwd, diags) {
         lineNumber = line;
         characterNumber = character;
         message = diag.messageText;
+
+        if (!errorObject.hasOwnProperty(fileName)) {
+          errorObject[fileName] = [];
+        }
+
+        errorObject[fileName].push({
+          type: type,
+          fileName: fileName,
+          lineNumber: lineNumber,
+          characterNumber: characterNumber,
+          message: message
+        });
       }
       else {
         type = "TEMPLATE_PARSE_ERROR";
-        fileName = lineNumber = characterNumber = "";
-        message = diag.message;
+
+        let messageLines = diag.message.split("\n").filter(s => !!s).slice(1);
+
+        /*
+          here we break up the multiple error messages that are concatenated
+          into one message into all of the separate messages
+
+          assumption is that the last line of a given error message will contain
+          "ng://"
+        */
+
+        let currentBlock = [];
+
+        for (let i = 0; i < messageLines.length; i++) {
+          let line = messageLines[i];
+          currentBlock.push(line);
+          if (line.indexOf("ng://") != -1) {
+            // we have the full end of a block, so let's parse that
+            let lastLine = currentBlock[currentBlock.length - 1];
+            let lastLineParts = lastLine.split(":");
+            let message = currentBlock.slice(0, currentBlock.length - 1).join("\n") + lastLineParts[0];
+            let errorLocationInfo = lastLineParts.slice(1).join(":").split("@");
+            fileName = errorLocationInfo[0].replace(" ng://", "");
+            lineNumber = errorLocationInfo[1].split(":")[0];
+            characterNumber = errorLocationInfo[1].split(":")[1];
+
+            if (!errorObject.hasOwnProperty(fileName)) {
+              errorObject[fileName] = [];
+            }
+
+            errorObject[fileName].push({
+              type: type,
+              fileName: fileName,
+              lineNumber: lineNumber,
+              characterNumber: characterNumber,
+              message: message
+            });
+
+            currentBlock = [];
+          }
+        }
       }
 
-      if (!errorObject.hasOwnProperty(fileName)) {
-        errorObject[fileName] = [];
-      }
 
-      errorObject[fileName].push({
-        type: type,
-        fileName: fileName,
-        lineNumber: lineNumber,
-        characterNumber: characterNumber,
-        message: message
-      });
     }
-    console.log(errorObject);
     return JSON.stringify(errorObject);
   } else
     return '';
@@ -152,7 +190,6 @@ function handleCompilerError(e) {
 }
 
 function check(cwd, ...args) {
-  console.log("args: ", args);
   if (args.some(diags => !!(diags && diags[0]))) {
     throw syntaxError(args.map(diags => {
                             if (diags && diags[0]) {

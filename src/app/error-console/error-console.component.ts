@@ -5,22 +5,21 @@ import { Component, OnInit, Input } from '@angular/core';
   templateUrl: './error-console.component.html',
   styleUrls: ['./error-console.component.css']
 })
-export class ErrorConsoleComponent implements OnInit {
+export class ErrorConsoleComponent {
 
   _errorList: any[];
 
-  @Input() set errors(errorObject) {
-    this._errorList = Object.keys(errorObject).map(filename => {
+  @Input() set errors(_errorObject) {
+
+    this._errorList = Object.keys(_errorObject).map(filename => {
       return {
         "fileName": filename,
-        "errors": errorObject[filename]
+        "errors": _errorObject[filename]
       }
     });
+    console.log(this._errorList);
   }
 
   constructor() { }
-
-  ngOnInit() {
-  }
 
 }

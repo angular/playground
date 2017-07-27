@@ -40,7 +40,6 @@ export class CompilerService {
 
       case WorkerMessageType.COMPILATION_ERROR:
         console.error("COMPILATION_ERROR!");
-        console.log(message.data.data);
         this.compilationReject(message.data.data);
         break;
     }
