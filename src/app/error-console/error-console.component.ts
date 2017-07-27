@@ -22,7 +22,7 @@ export class ErrorConsoleComponent {
     let firstError = this._errorList[0];
     if (firstError) {
       this.tabControlService.createTab(firstError.fileName);
-      this.tabControlService.setErrorLines(firstError.errors.map(error => error.lineNumber));
+      this.tabControlService.setFileErrors(firstError.errors);
     }
   }
 

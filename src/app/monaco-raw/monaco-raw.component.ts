@@ -40,8 +40,26 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
     }
   }
 
-  @Input() set errorLines(lines: number[]) {
-    this.setErrorDecorationsAtLines(lines.filter((v,i) => lines.indexOf(v) == i));
+  @Input() set fileErrorMessages(errors: any[]) {
+    console.log(errors);
+    let markers = errors.filter(error => error.type === "TEMPLATE_PARSE_ERROR")
+                        .map(error => {
+                          return {
+                            severity: monaco.Severity.Error,
+                            code: null,
+                            source: null,
+                            startLineNumber: error.lineNumber,
+                            startColumn: 1,
+                            endLineNumber: error.lineNumber,
+                            endColumn: error.characterNumber,
+                            message: error.message
+                          }
+                        });
+    console.log(markers);
+
+    if (this.model) {
+      monaco.editor.setModelMarkers(this.model, this._language, markers);
+    }
   }
 
   @Output() change = new EventEmitter();
@@ -52,6 +70,7 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
   private _value = '';
   private _language = '';
   private decorations = [];
+  model = null;
 
   constructor(private http: Http, private fsService: VirtualFsService) {}
 
@@ -86,11 +105,11 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
   initMonaco() {
     var myDiv: HTMLDivElement = this.editorContent.nativeElement;
 
-    let model = monaco.editor.createModel(this._value, this._language,
+    this.model = monaco.editor.createModel(this._value, this._language,
                                           new monaco.Uri("file://foo.ts"))
 
     this._editor = monaco.editor.create(myDiv, {
-      model: model,
+      model: this.model,
     });
 
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({

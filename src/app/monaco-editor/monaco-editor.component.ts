@@ -22,7 +22,7 @@ export class MonacoEditorComponent {
 
   currentTab: TabState;
   currentTabIndex: number = 0;
-  errorLines: number[] = [];
+  fileErrorMessages: any[] = [];
 
   tabs: TabState[] = [
     {
@@ -43,7 +43,7 @@ export class MonacoEditorComponent {
     this.currentTab = this.tabs[0];
 
     tabControlService.tabCreated$.subscribe(this.createNewTab.bind(this));
-    tabControlService.errorLinesSet$.subscribe(lines => {this.errorLines = lines;})
+    tabControlService.fileErrorsSet$.subscribe(errors => {this.fileErrorMessages = errors;})
   }
 
   changeEvent(value: string) {

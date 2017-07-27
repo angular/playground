@@ -7,12 +7,12 @@ export class TabControlService {
   // Observable sources
   private tabCreatedSource = new Subject<string>();
   private tabClosedSource = new Subject<string>();
-  private errorLinesSource = new Subject<number[]>();
+  private fileErrorsSource = new Subject<any[]>();
 
   // Observable streams
   tabCreated$ = this.tabCreatedSource.asObservable();
   tabClosed$ = this.tabClosedSource.asObservable();
-  errorLinesSet$ = this.errorLinesSource.asObservable();
+  fileErrorsSet$ = this.fileErrorsSource.asObservable();
 
   // Message commands
   createTab(filename: string) {
@@ -23,8 +23,8 @@ export class TabControlService {
     this.tabClosedSource.next(filename);
   }
 
-  setErrorLines(lines: number[]) {
-    this.errorLinesSource.next(lines);
+  setFileErrors(errors: any[]) {
+    this.fileErrorsSource.next(errors);
   }
 
 }

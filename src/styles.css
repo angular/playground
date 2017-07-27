@@ -58,8 +58,3 @@ html, body {
 	height: 100%;
 	overflow: hidden;
 }
-
-
-.editorErrorDecoration {
-	background: rgba(255,0,0,0.2);
-}

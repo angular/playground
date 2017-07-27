@@ -11,6 +11,6 @@
   <app-monaco-raw  [value]="fsService.readFile(currentTab.filename)"
                   [language]="currentTab.editorConfig.language"
                   (change)="changeEvent($event)"
-                  [errorLines]="errorLines">
+                  [fileErrorMessages]="fileErrorMessages">
   </app-monaco-raw>
 </div>
