@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { TabControlService } from '../shared/tab-control.service';
 
 @Component({
   selector: 'app-error-console',
@@ -17,9 +18,14 @@ export class ErrorConsoleComponent {
         "errors": _errorObject[filename]
       }
     });
-    console.log(this._errorList);
+
+    let firstError = this._errorList[0];
+    if (firstError) {
+      this.tabControlService.createTab(firstError.fileName);
+      this.tabControlService.setErrorLines(firstError.errors.map(error => error.lineNumber));
+    }
   }
 
-  constructor() { }
+  constructor(private tabControlService: TabControlService) { }
 
 }

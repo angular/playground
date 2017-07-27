@@ -165,8 +165,8 @@ function formatDiagnostics(cwd, diags) {
             errorObject[fileName].push({
               type: type,
               fileName: fileName,
-              lineNumber: lineNumber,
-              characterNumber: characterNumber,
+              lineNumber: Number(lineNumber),
+              characterNumber: Number(characterNumber),
               message: message
             });
 

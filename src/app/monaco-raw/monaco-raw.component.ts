@@ -24,12 +24,14 @@ declare const require: any;
 export class MonacoRawComponent implements OnInit, AfterViewInit {
 
   @ViewChild('editor') editorContent: ElementRef;
+
   @Input() set language(l:string) {
     this._language = l;
     if (this._editor) {
       monaco.editor.setModelLanguage(this._editor.getModel(), l);
     }
   }
+
   @Input() set value(v:string) {
     if (v !== this._value) {
       this._value = v;
@@ -37,12 +39,19 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
       this.writeValue(v);
     }
   }
+
+  @Input() set errorLines(lines: number[]) {
+    this.setErrorDecorationsAtLines(lines.filter((v,i) => lines.indexOf(v) == i));
+  }
+
   @Output() change = new EventEmitter();
+
   @Output() instance = null;
 
   private _editor: any;
   private _value = '';
   private _language = '';
+  private decorations = [];
 
   constructor(private http: Http, private fsService: VirtualFsService) {}
 
@@ -117,6 +126,21 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
       this.updateValue(this._editor.getModel().getValue());
     });
     this._editor.getModel().setValue(this._value);
+  }
+
+  setErrorDecorationsAtLines(lines: number[]) {
+    if (this._editor) {
+      // this._editor.deltaDecorations(this.decorations, []);
+      this.decorations = this._editor.deltaDecorations(this.decorations, lines.map(num => {
+        return {
+          range: new monaco.Range(num, 1, num, 1),
+          options: {
+            isWholeLine: true,
+            className: 'editorErrorDecoration'
+          }
+        }
+      }));
+    }
   }
 
   /**
