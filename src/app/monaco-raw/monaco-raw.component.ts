@@ -48,9 +48,9 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
                             severity: monaco.Severity.Error,
                             code: null,
                             source: null,
-                            startLineNumber: error.lineNumber,
+                            startLineNumber: error.lineNumber + 1,
                             startColumn: 1,
-                            endLineNumber: error.lineNumber,
+                            endLineNumber: error.lineNumber + 1,
                             endColumn: error.characterNumber,
                             message: error.message
                           }
