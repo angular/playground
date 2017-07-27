@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { inflateRaw } from 'pako';
 
 import * as fs from '../assets/fs/fs';
 
@@ -25,7 +26,92 @@ class File {
 @Injectable()
 export class VirtualFsService {
 
+  private urlWorker: Worker;
+
   constructor() {
+
+    this.urlWorker = new Worker("/assets/sharing/url-worker.js");
+    this.urlWorker.onmessage = function(message) {
+      history.replaceState(undefined, '', message.data);
+    }
+
+    if (location.hash) {
+      this.loadDataFromUrlHash();
+    }
+    else {
+      this.writeDefaultContent();
+    }
+  }
+
+  private loadDataFromUrlHash() {
+    let fragment = location.hash.substring(1);
+    const [version, ...data] = fragment.split(",");
+    const code = data.pop()!;
+    // let inflated = inflateRaw(location.hash.split(",")[1]);
+    let inflated = inflateRaw(
+          atob(code.replace(/\./g, '+').replace(/_/g, '/')), {to: 'string'});
+          // code.replace(/\./g, '+').replace(/_/g, '/'), {to: 'string'});
+
+    const loadedFiles = JSON.parse(inflated);
+    Object.keys(loadedFiles).forEach(filename => {
+      this.writeFile(filename, loadedFiles[filename], true);
+    });
+  }
+
+  writeFile(filename: string, fileContents: string, dontUpdateUrl?: boolean): void {
+    fs.writeFileSync(filename, fileContents);
+
+    if (!dontUpdateUrl)
+      this.urlWorker.postMessage(JSON.stringify(this.getUserFileTextBundle()));
+  }
+
+  readFile(filename: string): string {
+    return fs.readFileSync(filename);
+  }
+
+  getFsBundle() {
+    return fs.vfs.fileSystem;
+  }
+
+  // returns the text of all the files that aren't in /node_modules/
+  getUserFileTextBundle() {
+    let bundle = fs.vfs.fileSystem;
+    let new_bundle = {};
+    Object.keys(fs.vfs.fileSystem).forEach(key => {
+      if (key.indexOf("/node_modules/") == -1 && key.indexOf("/dist/") == -1) {
+        new_bundle[key] = bundle[key].text;
+      }
+    });
+    return new_bundle;
+  }
+
+  getHierarchicalFs(): Folder {
+
+    let hierarchy = new Folder("/");
+
+    let files = fs.vfs.getFileList();
+
+    for(let filename of files) {
+      let path = filename.split("/").filter((part) => part !== "");
+      let currentFolder: Folder = hierarchy;
+      for(let i = 0; i < path.length; i++) {
+        if (i == path.length - 1) {
+          currentFolder.subFiles.push(new File(filename, this.readFile(filename)));
+        }
+        else {
+          let folderName = path[i];
+          if (!currentFolder[folderName]) {
+            currentFolder.subFolders[folderName] = new Folder(folderName);
+          }
+          currentFolder = currentFolder.subFolders[folderName];
+        }
+      }
+    }
+
+    return hierarchy;
+  }
+
+  private writeDefaultContent() {
     this.writeFile("/component.ts", `import {BrowserModule} from '@angular/platform-browser';
 import {Component, NgModule, ApplicationRef} from '@angular/core';
 
@@ -92,44 +178,6 @@ import { MainModuleNgFactory } from './component.ngfactory';
 console.log('Running AOT compiled');
 platformBrowser().bootstrapModuleFactory(MainModuleNgFactory);
     `);
-  }
-
-  writeFile(filename: string, fileContents: string): void {
-    fs.writeFileSync(filename, fileContents);
-  }
-
-  readFile(filename: string): string {
-    return fs.readFileSync(filename);
-  }
-
-  getFsBundle() {
-    return fs.vfs.fileSystem;
-  }
-
-  getHierarchicalFs(): Folder {
-
-    let hierarchy = new Folder("/");
-
-    let files = fs.vfs.getFileList();
-
-    for(let filename of files) {
-      let path = filename.split("/").filter((part) => part !== "");
-      let currentFolder: Folder = hierarchy;
-      for(let i = 0; i < path.length; i++) {
-        if (i == path.length - 1) {
-          currentFolder.subFiles.push(new File(filename, this.readFile(filename)));
-        }
-        else {
-          let folderName = path[i];
-          if (!currentFolder[folderName]) {
-            currentFolder.subFolders[folderName] = new Folder(folderName);
-          }
-          currentFolder = currentFolder.subFolders[folderName];
-        }
-      }
-    }
-
-    return hierarchy;
   }
 
 }

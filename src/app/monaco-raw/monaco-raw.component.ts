@@ -1,12 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input, Output, forwardRef, EventEmitter } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, Input, Output, forwardRef, EventEmitter } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import {Headers, Http} from '@angular/http';
-import {VirtualFsService} from '../virtual-fs.service';
+import { Headers, Http } from '@angular/http';
+import { VirtualFsService } from '../virtual-fs.service';
 
 import 'rxjs/add/operator/toPromise';
 
 declare const monaco: any;
 declare const require: any;
+declare const window: any;
+declare const document: any;
 
 @Component({
   selector: 'app-monaco-raw',
@@ -20,63 +22,57 @@ declare const require: any;
     }
   ],
 })
-
-export class MonacoRawComponent implements OnInit, AfterViewInit {
+export class MonacoRawComponent implements AfterViewInit {
 
   @ViewChild('editor') editorContent: ElementRef;
 
-  @Input() set language(l:string) {
-    this._language = l;
+  @Input() set language(language: string) {
+    this._language = language;
     if (this._editor) {
-      monaco.editor.setModelLanguage(this._editor.getModel(), l);
+      monaco.editor.setModelLanguage(this._editor.getModel(), language);
     }
   }
 
-  @Input() set value(v:string) {
+  @Input() set value(v: string) {
     if (v !== this._value) {
       this._value = v;
-      this.onChange(v);
-      this.writeValue(v);
+      // this.onChange(v);
+      this.writeValueToMonaco(v);
     }
   }
 
   @Input() set fileErrorMessages(errors: any[]) {
-    console.log(errors);
     let markers = errors.filter(error => error.type === "TEMPLATE_PARSE_ERROR")
-                        .map(error => {
-                          return {
-                            severity: monaco.Severity.Error,
-                            code: null,
-                            source: null,
-                            startLineNumber: error.lineNumber + 1,
-                            startColumn: 1,
-                            endLineNumber: error.lineNumber + 1,
-                            endColumn: error.characterNumber,
-                            message: error.message
-                          }
-                        });
-    console.log(markers);
+      .map(error => {
+        return {
+          severity: monaco.Severity.Error,
+          code: null,
+          source: null,
+          startLineNumber: error.lineNumber + 1,
+          startColumn: 1,
+          endLineNumber: error.lineNumber + 1,
+          endColumn: error.characterNumber,
+          message: error.message
+        }
+      });
 
-    if (this.model) {
+    if (this.model && markers.length > 0) {
       monaco.editor.setModelMarkers(this.model, this._language, markers);
     }
   }
 
   @Output() change = new EventEmitter();
 
-  @Output() instance = null;
-
   private _editor: any;
   private _value = '';
   private _language = '';
   private decorations = [];
-  model = null;
+  private model = null;
 
-  constructor(private http: Http, private fsService: VirtualFsService) {}
+  constructor(private http: Http, private fsService: VirtualFsService) { }
 
-  get value():string { return this._value; };
-
-  ngOnInit() {
+  get value(): string {
+    return this._value;
   }
 
   ngAfterViewInit() {
@@ -106,7 +102,7 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
     var myDiv: HTMLDivElement = this.editorContent.nativeElement;
 
     this.model = monaco.editor.createModel(this._value, this._language,
-                                          new monaco.Uri("file://foo.ts"))
+      new monaco.Uri("file://foo.ts"))
 
     this._editor = monaco.editor.create(myDiv, {
       model: this.model,
@@ -123,81 +119,39 @@ export class MonacoRawComponent implements OnInit, AfterViewInit {
     });
 
     this.http.get("/assets/compiler/compiler_bundle.json")
-        .toPromise()
-        .then(response => {
-          let fileSystem = response.json().fileSystem;
-          let fileNames = Object.keys(fileSystem);
-          for (let filename of fileNames) {
-            if (filename.indexOf("node_modules/") != 0 ||
-                filename.indexOf("/typescript/") != -1)
-            {
-              continue;
-            }
-            monaco.languages.typescript.typescriptDefaults.addExtraLib(
-              fileSystem[filename].text,
-              filename
-            );
+      .toPromise()
+      .then(response => {
+        let fileSystem = response.json().fileSystem;
+        let fileNames = Object.keys(fileSystem);
+        for (let filename of fileNames) {
+          // we don't want to load in anything that's not a dependency or that
+          // is a typescript .d.ts
+          if (filename.indexOf("node_modules/") != 0 ||
+            filename.indexOf("/typescript/") != -1) {
+            continue;
           }
-        });
+          monaco.languages.typescript.typescriptDefaults.addExtraLib(
+            fileSystem[filename].text,
+            filename
+          );
+        }
+      });
 
-    this._editor.getModel().onDidChangeContent( (e)=>
-    {
-      this.updateValue(this._editor.getModel().getValue());
+    this._editor.getModel().onDidChangeContent((e) => {
+      this.sendFileUpdatedEvent(this._editor.getModel().getValue());
     });
     this._editor.getModel().setValue(this._value);
   }
 
-  setErrorDecorationsAtLines(lines: number[]) {
-    if (this._editor) {
-      // this._editor.deltaDecorations(this.decorations, []);
-      this.decorations = this._editor.deltaDecorations(this.decorations, lines.map(num => {
-        return {
-          range: new monaco.Range(num, 1, num, 1),
-          options: {
-            isWholeLine: true,
-            className: 'editorErrorDecoration'
-          }
-        }
-      }));
-    }
-  }
-
-  /**
-   * UpdateValue
-   *
-   * @param value
-   */
-  updateValue(value:string)
-  {
-    this.value = value;
-    this.onChange(value);
-    this.onTouched();
+  sendFileUpdatedEvent(value: string) {
     this.change.emit(value);
   }
 
-  /**
-   * WriteValue
-   * Implements ControlValueAccessor
-   *
-   * @param value
-   */
-  writeValue(value:string)
-  {
+  writeValueToMonaco(value: string) {
     this._value = value || '';
-    if (this.instance)
-    {
-      this.instance.setValue(this._value);
-    }
     // If an instance of Monaco editor is running, update its contents
-    if(this._editor)
-    {
+    if (this._editor) {
       this._editor.getModel().setValue(this._value);
     }
   }
-
-  onChange(_){}
-  onTouched(){}
-  registerOnChange(fn){this.onChange = fn;}
-  registerOnTouched(fn){this.onTouched = fn;}
-
 }

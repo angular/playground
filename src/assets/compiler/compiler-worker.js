@@ -81,6 +81,10 @@ function isTsDiagnostics(diagnostics){
   return diagnostics && diagnostics[0] && (diagnostics[0].file || diagnostics[0].messageText);
 }
 
+function isNgcSyntaxError(error) {
+  return error[ERROR_SYNTAX_ERROR];
+}
+
 const ERROR_SYNTAX_ERROR = 'ngSyntaxError';
 const ERROR_PARSE_ERRORS = 'ngParseErrors';
 
@@ -187,6 +191,7 @@ function handleCompilerError(e) {
     type: COMPILATION_ERROR,
     data: String(e)
   });
+  throw(e);
 }
 
 function check(cwd, ...args) {
@@ -204,7 +209,6 @@ function check(cwd, ...args) {
 
 function compile(fileBundle) {
 
-  console.log("running!");
   // delete everything that's not a dependency - gotta do this or weird things happen
   let files = fs.vfs.getFileList();
   for (i in files) {
@@ -228,12 +232,9 @@ function compile(fileBundle) {
     var compilerStatus = ngc.performCompilation("/", parsed.fileNames, parsed.options,
       ngOptions, handleCompilerError, check, new BrowserCompilerHost);
   } catch(e) {
-
-    postMessage({
-      type: COMPILATION_ERROR,
-      data: String(e)
-    });
-    return;
+    if (isNgcSyntaxError)
+      return;
+    throw e;
   }
 
   // compilation is done, let's build the bundle
