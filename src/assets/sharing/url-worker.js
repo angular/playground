@@ -11,7 +11,6 @@ require.config({
 })
 require(['pako'], _pako => {
   pako = _pako;
-  console.log(pako);
 
   addEventListener('message', (message) => {
     postMessage(encodeUrlData(message.data));

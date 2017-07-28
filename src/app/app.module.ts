@@ -43,7 +43,7 @@ import { ErrorConsoleComponent } from './error-console/error-console.component';
     MdIconModule,
     HttpClientModule,
     HttpModule,
-    MdListModule
+    MdListModule,
   ],
   providers: [
     VirtualFsService,

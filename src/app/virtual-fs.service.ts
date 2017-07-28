@@ -69,6 +69,10 @@ export class VirtualFsService {
     return fs.readFileSync(filename);
   }
 
+  fileExists(filename: string): boolean {
+    return fs.fileExists(filename);
+  }
+
   getFsBundle() {
     return fs.vfs.fileSystem;
   }
