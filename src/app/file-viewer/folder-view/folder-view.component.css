@@ -21,3 +21,7 @@ md-list-item {
 .container {
   display: none;
 }
+
+.fill-remaining-space {
+  flex: 1 1 auto;
+}

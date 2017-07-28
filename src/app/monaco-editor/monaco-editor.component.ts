@@ -43,6 +43,7 @@ export class MonacoEditorComponent {
     this.currentTab = this.tabs[0];
 
     tabControlService.tabCreated$.subscribe(this.createNewTab.bind(this));
+    tabControlService.tabClosed$.subscribe(this.handleTabClose.bind(this, null));
     tabControlService.fileErrorsSet$.subscribe(errors => {this.fileErrorMessages = errors;})
   }
 
@@ -96,8 +97,15 @@ export class MonacoEditorComponent {
       return;
 
     for (let i = 0; i < this.tabs.length; i++) {
-      if (this.tabs[i].filename == filename) {
+      let curFname = this.tabs[i].filename;
+      if (curFname == filename) {
+
         this.tabs.splice(i, 1);
+
+        if (this.currentTab.filename == curFname) {
+          this.currentTab = this.tabs[0];
+        }
+
         return;
       }
     }

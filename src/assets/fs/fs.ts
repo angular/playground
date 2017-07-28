@@ -33,3 +33,7 @@ export function buildVfs(): virtual_file_system.FileSystem {
 export function setVfs(newfs: virtual_file_system.FileSystem) {
   vfs = newfs;
 }
+
+export function deleteFile(filename: string) {
+  vfs.deleteFile(filename);
+}

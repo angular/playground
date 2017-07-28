@@ -62,7 +62,12 @@ export class VirtualFsService {
     fs.writeFileSync(filename, fileContents);
 
     if (!dontUpdateUrl)
-      this.urlWorker.postMessage(JSON.stringify(this.getUserFileTextBundle()));
+      this.updateUrlWorker();
+  }
+
+  deleteFile(filename: string) {
+    fs.deleteFile(filename);
+    this.updateUrlWorker();
   }
 
   readFile(filename: string): string {
@@ -75,6 +80,10 @@ export class VirtualFsService {
 
   getFsBundle() {
     return fs.vfs.fileSystem;
+  }
+
+  updateUrlWorker() {
+    this.urlWorker.postMessage(JSON.stringify(this.getUserFileTextBundle()));
   }
 
   // returns the text of all the files that aren't in /node_modules/

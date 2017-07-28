@@ -12,6 +12,8 @@
                     (click)="fileSelected($event, file)">
       <md-icon md-list-icon>insert_drive_file</md-icon>
       {{file.fileName | extractFilename}}
+      <span class="fill-remaining-space"></span>
+      <md-icon (click)="removeFile($event, file.fileName)">remove_circle</md-icon>
     </md-list-item>
   </div>
 </md-list>
