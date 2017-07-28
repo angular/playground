@@ -2020,7 +2020,7 @@ function share() {
 var share_2 = share;
 
 /**
- * @license Angular v5.0.0-beta.0-027a49ebfb
+ * @license Angular v5.0.0-beta.0-4897240e9a
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -2795,7 +2795,7 @@ ViewEncapsulation[ViewEncapsulation.None] = "None";
 /**
  * \@stable
  */
-var VERSION$1$1 = new Version('5.0.0-beta.0-027a49ebfb');
+var VERSION$1$1 = new Version('5.0.0-beta.0-4897240e9a');
 /**
  * Inject decorator and metadata.
  *
@@ -15345,7 +15345,7 @@ function transition$$1(stateChangeExpr, steps) {
 }
 
 /**
- * @license Angular v5.0.0-beta.0-027a49ebfb
+ * @license Angular v5.0.0-beta.0-4897240e9a
  * (c) 2010-2017 Google, Inc. https://angular.io/
  * License: MIT
  */
@@ -15368,7 +15368,7 @@ function transition$$1(stateChangeExpr, steps) {
 /**
  * \@stable
  */
-var VERSION = new Version('5.0.0-beta.0-027a49ebfb');
+var VERSION = new Version('5.0.0-beta.0-4897240e9a');
 /**
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
@@ -46829,6 +46829,7 @@ function performCompilation(basePath, files, options, ngOptions, consoleError, c
             consoleError(e.message);
             return 1;
         }
+        throw e;
     }
     return 0;
 }
