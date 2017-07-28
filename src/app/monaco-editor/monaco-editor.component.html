@@ -8,8 +8,8 @@
       </ng-template>
     </md-tab>
   </md-tab-group>
-  <app-monaco-raw  [value]="fsService.readFile(currentTab.filename)"
-                  [language]="currentTab.editorConfig.language"
+  <app-monaco-raw [value]="(currentTab) ? fsService.readFile(currentTab.filename): ''"
+                  [language]="(currentTab) ? currentTab.editorConfig.language: ''"
                   (change)="changeEvent($event)"
                   [fileErrorMessages]="fileErrorMessages">
   </app-monaco-raw>

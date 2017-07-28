@@ -20,28 +20,12 @@ export class MonacoEditorComponent {
 
   @Output() fileChange: EventEmitter<object> = new EventEmitter();
 
-  currentTab: TabState;
-  currentTabIndex: number = 0;
+  currentTab: TabState = null;
+  currentTabIndex: number;
   fileErrorMessages: any[] = [];
-
-  tabs: TabState[] = [
-    {
-      editorConfig: {
-        language: "typescript",
-      },
-      filename: "/component.ts",
-    },
-    {
-      editorConfig: {
-        language: "html",
-      },
-      filename: "/templates/template.html"
-    }
-  ]
+  tabs: TabState[] = [];
 
   constructor(public fsService: VirtualFsService, private tabControlService: TabControlService) {
-    this.currentTab = this.tabs[0];
-
     tabControlService.tabCreated$.subscribe(this.createNewTab.bind(this));
     tabControlService.tabClosed$.subscribe(this.handleTabClose.bind(this, null));
     tabControlService.fileErrorsSet$.subscribe(errors => {this.fileErrorMessages = errors;})
@@ -53,7 +37,8 @@ export class MonacoEditorComponent {
     if (typeof value == "object")
       return;
 
-    this.fsService.writeFile(this.currentTab.filename, value);
+    if (this.currentTab)
+      this.fsService.writeFile(this.currentTab.filename, value);
   }
 
   createNewTab(filename: string) {
@@ -92,10 +77,6 @@ export class MonacoEditorComponent {
   }
 
   handleTabClose(event, filename) {
-
-    if (this.tabs.length == 1)
-      return;
-
     for (let i = 0; i < this.tabs.length; i++) {
       let curFname = this.tabs[i].filename;
       if (curFname == filename) {
