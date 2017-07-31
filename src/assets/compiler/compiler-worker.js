@@ -18,6 +18,7 @@ importScripts('https://unpkg.com/rollup@0.45.2/dist/rollup.browser.js');
 // necessary globals
 var port;
 var window;
+var previous_bundle = undefined;
 
 function instantiate() {
 
@@ -218,6 +219,8 @@ function check(cwd, ...args) {
 
 function compile(fileBundle) {
 
+  console.log(`Starting compilation at: ${performance.now()}`)
+
   // delete everything that's not a dependency - gotta do this or weird things happen
   let files = fs.vfs.getFileList();
   for (i in files) {
@@ -251,6 +254,9 @@ function compile(fileBundle) {
 }
 
 function makeBundle() {
+
+  var start_bundling_time = performance.now();
+  console.log(`Starting bundling at ${start_bundling_time}`);
 
   // shim around window - deal with performance calls in rollup
 
@@ -305,6 +311,8 @@ function makeBundle() {
       "rxjs/Subject": "https://unpkg.com/rxjs@5.4.2/bundles/Rx.js",
     },
     format: 'umd',
+    cache: previous_bundle,
+    treeshake: false,
     plugins: [{
       resolveId(importee, importer) {
         // handle cases like ./util/root imported by rxjs/Observable
@@ -376,6 +384,13 @@ function makeBundle() {
         data: dist_fs,
       })
     });
+
+    // cache the generate bundle
+    previous_bundle = bundle;
+
+    var end_bundling_time = performance.now();
+    console.log(`Ending bundling at ${end_bundling_time}`);
+    console.log(`Bundling took ${end_bundling_time - start_bundling_time}`);
   });
 }
 
