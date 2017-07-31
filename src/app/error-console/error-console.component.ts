@@ -11,17 +11,16 @@ export class ErrorConsoleComponent {
   _errorList: any[];
 
   @Input() set errors(_errorObject) {
-    this._errorList = _errorObject.map(error => JSON.parse(error)).map(e => {
-      return Object.keys(e).map(fname => {
-        return {
-          filename: fname,
-          errors: e[fname]
-        }
-      });
-    }).reduce((a,b) => a.concat(b), []);
+
+    this._errorList = Object.keys(_errorObject).map(filename => {
+      return {
+        "fileName": filename,
+        "errors": _errorObject[filename]
+      }
+    });
 
     let firstError = this._errorList[0];
-    if (firstError && firstError.fileName) {
+    if (firstError) {
       this.tabControlService.createTab(firstError.fileName);
       this.tabControlService.setFileErrors(firstError.errors);
     }

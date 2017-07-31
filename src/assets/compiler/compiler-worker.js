@@ -107,12 +107,13 @@ let api = {
 function formatDiagnostics(cwd, diags) {
   if (diags && diags.length) {
 
+    let isTsErrors = isTsDiagnostics(diags);
+
     let errorObject = {};
     for(let i = 0; i < diags.length; i++) {
       let diag = diags[i];
 
       let type, fileName, lineNumber, characterNumber, message;
-      let isTsErrors = isTsDiagnostics([diag]);
 
       if (isTsErrors) {
         type = "TYPESCRIPT_DIAGNOSTIC_ERROR";
@@ -134,7 +135,7 @@ function formatDiagnostics(cwd, diags) {
           message: message
         });
       }
-      else if (diag.message && diag.message.indexOf("Template parse") != -1){
+      else {
         type = "TEMPLATE_PARSE_ERROR";
 
         let messageLines = diag.message.split("\n").filter(s => !!s).slice(1);
@@ -178,18 +179,8 @@ function formatDiagnostics(cwd, diags) {
           }
         }
       }
-      else {
-        if (!errorObject.hasOwnProperty("General errors")) {
-          errorObject["General errors"] = [];
-        }
-        errorObject["General errors"].push({
-          type: "GENERAL_ERRORS",
-          fileName: "General errors",
-          lineNumber: '',
-          characterNumber: '',
-          message: diag.message
-        });
-      }
+
+
     }
     return JSON.stringify(errorObject);
   } else
@@ -206,14 +197,14 @@ function handleCompilerError(e) {
 
 function check(cwd, ...args) {
   if (args.some(diags => !!(diags && diags[0]))) {
-    let message = JSON.stringify(args.map(diags => {
+    throw syntaxError(args.map(diags => {
                             if (diags && diags[0]) {
                               console.log("Diags in check: ", diags);
                               return formatDiagnostics(cwd, diags);
                             }
                           })
-                          .filter(message => !!message));
-    throw syntaxError(message);
+                          .filter(message => !!message)
+                          .join(''));
   }
 }
 
@@ -244,7 +235,7 @@ function compile(fileBundle) {
     var compilerStatus = ngc.performCompilation("/", parsed.fileNames, parsed.options,
       ngOptions, handleCompilerError, check, new BrowserCompilerHost);
   } catch(e) {
-    if (isNgcSyntaxError(e))
+    if (isNgcSyntaxError)
       return;
     throw e;
   }
