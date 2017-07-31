@@ -10,7 +10,7 @@ import { MdSnackBar } from '@angular/material';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'Angular Sandbox';
+  title = 'edit.ng';
 
   @ViewChild('consoleDrawer') consoleDrawer;
 
