@@ -114,8 +114,16 @@ function loadFilesIntoFileSystem(fileSystemData) {
 }
 exports.loadFilesIntoFileSystem = loadFilesIntoFileSystem;
 function readFileSync(filename) {
-    var res = exports.vfs.getSourceFile(filename).text;
-    return res;
+    var file = exports.vfs.getSourceFile(filename);
+    if (file) {
+        var res = exports.vfs.getSourceFile(filename).text;
+        return res;
+    }
+    else {
+        var e = SyntaxError(`File not found: ${filename}`);
+        e["ngSyntaxError"] = true;
+        throw e;
+    }
 }
 exports.readFileSync = readFileSync;
 function getSourceFile(filename) {

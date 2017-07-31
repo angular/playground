@@ -42,6 +42,10 @@ export class MonacoEditorComponent {
   }
 
   createNewTab(filename: string) {
+
+    if (!filename)
+      return;
+
     for (let i = 0; i < this.tabs.length; i++) {
       if (this.tabs[i].filename === filename) {
         this.currentTab = this.tabs[i];
@@ -77,6 +81,8 @@ export class MonacoEditorComponent {
   }
 
   handleTabClose(event, filename) {
+    if (this.tabs.length == 1)
+      return;
     for (let i = 0; i < this.tabs.length; i++) {
       let curFname = this.tabs[i].filename;
       if (curFname == filename) {

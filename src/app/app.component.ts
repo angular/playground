@@ -16,7 +16,7 @@ export class AppComponent {
 
   generatedBundle;
 
-  errorObject = {};
+  errorObject = []
 
   constructor(public fsService: VirtualFsService,
               private compilerService: CompilerService,
@@ -24,7 +24,7 @@ export class AppComponent {
 
   private setConsoleErrorMessage(error: string) {
     if (error === "") {
-      this.errorObject = {}
+      this.errorObject = [];
     }
     else {
       this.errorObject = JSON.parse(error);
