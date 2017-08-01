@@ -1,4 +1,6 @@
-import { Component, Input, Inject} from '@angular/core';
+import { Component, Input, Inject, ViewChild} from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ContextMenuComponent } from 'ngx-contextmenu';
 import { TabControlService } from '../../shared/tab-control.service';
 import { MD_DIALOG_DATA, MdDialog, MdDialogRef } from '@angular/material';
 import { VirtualFsService } from '../../virtual-fs.service';
@@ -10,27 +12,31 @@ import { VirtualFsService } from '../../virtual-fs.service';
 })
 export class FolderViewComponent {
 
-  @Input() folder: object;
+  @Input() folderList;
 
   display: boolean = true;
 
   constructor(private tabControlService: TabControlService,
-    private fsService: VirtualFsService, public dialog: MdDialog) {
+    private fsService: VirtualFsService, public dialog: MdDialog,
+    private sanitizer: DomSanitizer) {
   }
 
-  fileSelected(event, file) {
+  generateMarginStyle(level) {
+    return this.sanitizer.bypassSecurityTrustStyle(
+      `margin-left: calc(10px * ${level})`
+    );
+  }
+
+  @ViewChild('folderMenu') public folderMenu: ContextMenuComponent;
+  @ViewChild('fileMenu') public fileMenu: ContextMenuComponent;
+
+  private fileSelected(file) {
     this.tabControlService.createTab(file.fileName);
   }
 
-  toggleDisplay() {
-    this.display = !this.display;
-  }
-
-  removeFile(event, fileName) {
-    console.log(fileName);
-    console.log(this.fsService.fileExists(fileName));
+  removeFile($event, item) {
+    let fileName = $event.item.object.fileName;
     if (this.fsService.fileExists(fileName)) {
-
       let dialogRef = this.dialog.open(RemoveFileDialog, {
         data: fileName,
       });
@@ -40,10 +46,27 @@ export class FolderViewComponent {
           this.fsService.deleteFile(fileName);
         }
       })
-
     }
   }
 
+  objectClickEvent(event, object) {
+    if (object.fileName) {
+      this.fileSelected(object);
+    }
+  }
+
+  addNewFileInFolder($event) {
+    console.log($event);
+    let dialogRef = this.dialog.open(NewFileDialog, {
+      data: {
+        "baseName": $event.item.object.fullPath + "/"
+      }
+    });
+    dialogRef.afterClosed().subscribe((result: string) => {
+      console.log(`create file ${result}`);
+      this.fsService.writeFile(result, "");
+    })
+  }
 }
 
 @Component({
@@ -59,5 +82,22 @@ export class FolderViewComponent {
 })
 export class RemoveFileDialog {
   constructor(public dialogRef: MdDialogRef<RemoveFileDialog>,
+              @Inject(MD_DIALOG_DATA) public data: any) {}
+}
+
+@Component({
+  selector: 'newfile-dialog',
+  template: `
+    <md-input-container>
+      <input mdInput value="{{data.baseName}}" #fileName>
+    </md-input-container>
+
+    <button type="button" (click)="dialogRef.close(fileName.value)">
+      Create File
+    </button>
+  `
+})
+export class NewFileDialog {
+  constructor(private dialogRef: MdDialogRef<NewFileDialog>,
               @Inject(MD_DIALOG_DATA) public data: any) {}
 }

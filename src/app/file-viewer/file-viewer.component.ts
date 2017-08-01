@@ -9,7 +9,7 @@ import { TabControlService } from '../shared/tab-control.service';
 })
 export class FileViewerComponent {
 
-  @Input() hierarchicalFs: object;
+  @Input() hierarchicalFs;
 
   newFileName: string = "";
 

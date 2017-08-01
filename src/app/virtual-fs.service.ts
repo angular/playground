@@ -5,11 +5,13 @@ import * as fs from '../assets/fs/fs';
 
 class Folder {
   folderName: string;
+  fullPath: string;
   subFolders: {} = {};
   subFiles: File[] = [];
 
-  constructor(_folderName) {
+  constructor(_folderName, _fullPath) {
     this.folderName = _folderName;
+    this.fullPath = _fullPath;
   }
 }
 
@@ -21,6 +23,11 @@ class File {
     this.fileName = _fileName;
     this.contents = _contents;
   }
+}
+
+interface FolderFileLevel {
+  level: number;
+  object: Folder | File;
 }
 
 @Injectable()
@@ -98,30 +105,60 @@ export class VirtualFsService {
     return new_bundle;
   }
 
-  getHierarchicalFs(): Folder {
+  // getHierarchicalFs(): Folder {
+  getHierarchicalFs() {
 
-    let hierarchy = new Folder("/");
+    let hierarchy = new Folder("/", "/");
 
     let files = fs.vfs.getFileList();
+    console.log(files);
 
     for(let filename of files) {
       let path = filename.split("/").filter((part) => part !== "");
       let currentFolder: Folder = hierarchy;
       for(let i = 0; i < path.length; i++) {
         if (i == path.length - 1) {
+          console.log(`pushing ${filename}`);
           currentFolder.subFiles.push(new File(filename, this.readFile(filename)));
         }
         else {
           let folderName = path[i];
-          if (!currentFolder[folderName]) {
-            currentFolder.subFolders[folderName] = new Folder(folderName);
+          console.log(currentFolder);
+          if (!currentFolder.subFolders[folderName]) {
+            console.log(`${folderName} doesn't exist!`, currentFolder.subFolders[folderName]);
+            let fullPath = "/" + path.slice(0, i + 1).join("/");
+            currentFolder.subFolders[folderName] = new Folder(folderName, fullPath);
           }
           currentFolder = currentFolder.subFolders[folderName];
         }
       }
     }
 
-    return hierarchy;
+    console.log(hierarchy);
+
+    let flattened: FolderFileLevel[] =[];
+
+
+    const flatten = (folder: Folder, level: number) => {
+      flattened.push({
+        level: level,
+        object: folder
+      });
+      level++;
+      for (let subfile of folder['subFiles']) {
+        flattened.push({
+          level: level,
+          object: subfile
+        });
+      }
+      for (let subfoldername of Object.keys(folder['subFolders'])) {
+        flatten(folder['subFolders'][subfoldername], level);
+      }
+    }
+
+    flatten(hierarchy, 0);
+
+    return flattened;
   }
 
   private writeDefaultContent() {

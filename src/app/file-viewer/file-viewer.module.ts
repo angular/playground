@@ -1,12 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MdIconModule, MdListModule, MdDialogModule } from '@angular/material';
+import {
+  MdIconModule, MdListModule, MdDialogModule, MdInputModule
+} from '@angular/material';
 import { FormsModule } from '@angular/forms';
+
+import { ContextMenuModule } from 'ngx-contextmenu';
 
 import { SharedModule } from '../shared/shared.module';
 
 import {FileViewerComponent} from './file-viewer.component';
-import {FolderViewComponent, RemoveFileDialog} from './folder-view/folder-view.component';
+import {FolderViewComponent, RemoveFileDialog, NewFileDialog} from './folder-view/folder-view.component';
 import { ValuesPipe } from './values.pipe';
 
 import {VirtualFsService} from '../virtual-fs.service';
@@ -19,13 +23,15 @@ import {VirtualFsService} from '../virtual-fs.service';
     SharedModule,
     MdListModule,
     FormsModule,
-    MdDialogModule
+    MdDialogModule,
+    ContextMenuModule,
+    MdInputModule
   ],
   declarations: [
     FileViewerComponent,
     FolderViewComponent,
     ValuesPipe,
-    RemoveFileDialog
+    RemoveFileDialog, NewFileDialog
   ],
   exports: [
     FileViewerComponent
@@ -34,7 +40,7 @@ import {VirtualFsService} from '../virtual-fs.service';
     VirtualFsService
   ],
   entryComponents: [
-    RemoveFileDialog
+    RemoveFileDialog, NewFileDialog
   ]
 })
 export class FileViewerModule { }
