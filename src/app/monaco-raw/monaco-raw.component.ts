@@ -106,6 +106,7 @@ export class MonacoRawComponent implements AfterViewInit {
 
     this._editor = monaco.editor.create(myDiv, {
       model: this.model,
+      minimap: {enabled: false}
     });
 
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
