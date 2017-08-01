@@ -111,21 +111,17 @@ export class VirtualFsService {
     let hierarchy = new Folder("/", "/");
 
     let files = fs.vfs.getFileList();
-    console.log(files);
 
     for(let filename of files) {
       let path = filename.split("/").filter((part) => part !== "");
       let currentFolder: Folder = hierarchy;
       for(let i = 0; i < path.length; i++) {
         if (i == path.length - 1) {
-          console.log(`pushing ${filename}`);
           currentFolder.subFiles.push(new File(filename, this.readFile(filename)));
         }
         else {
           let folderName = path[i];
-          console.log(currentFolder);
           if (!currentFolder.subFolders[folderName]) {
-            console.log(`${folderName} doesn't exist!`, currentFolder.subFolders[folderName]);
             let fullPath = "/" + path.slice(0, i + 1).join("/");
             currentFolder.subFolders[folderName] = new Folder(folderName, fullPath);
           }
@@ -134,12 +130,12 @@ export class VirtualFsService {
       }
     }
 
-    console.log(hierarchy);
-
     let flattened: FolderFileLevel[] =[];
 
-
     const flatten = (folder: Folder, level: number) => {
+      if (folder.fullPath.indexOf("/dist") == 0) {
+        return;
+      }
       flattened.push({
         level: level,
         object: folder
@@ -159,6 +155,10 @@ export class VirtualFsService {
     flatten(hierarchy, 0);
 
     return flattened;
+  }
+
+  getFileList() {
+    return fs.vfs.getFileList();
   }
 
   private writeDefaultContent() {

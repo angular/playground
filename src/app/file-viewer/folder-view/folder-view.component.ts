@@ -49,6 +49,19 @@ export class FolderViewComponent {
     }
   }
 
+  removeFolder($event) {
+    console.log($event);
+    let path = $event.item.object.fullPath;
+    console.log(`full folder path: ${path}`);
+
+    for (let filename of this.fsService.getFileList()) {
+      console.log(filename);
+      if (filename.indexOf(path) == 0) {
+        this.fsService.deleteFile(filename);
+      }
+    }
+  }
+
   objectClickEvent(event, object) {
     if (object.fileName) {
       this.fileSelected(object);
@@ -56,14 +69,12 @@ export class FolderViewComponent {
   }
 
   addNewFileInFolder($event) {
-    console.log($event);
     let dialogRef = this.dialog.open(NewFileDialog, {
       data: {
         "baseName": $event.item.object.fullPath + "/"
       }
     });
     dialogRef.afterClosed().subscribe((result: string) => {
-      console.log(`create file ${result}`);
       this.fsService.writeFile(result, "");
     })
   }

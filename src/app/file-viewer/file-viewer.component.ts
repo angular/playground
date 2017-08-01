@@ -16,7 +16,6 @@ export class FileViewerComponent {
   constructor(private fsService: VirtualFsService, private tabControl: TabControlService) { }
 
   addNewFile(event) {
-    console.log(this.newFileName);
     if (this.newFileName === "")
       return;
     if (this.fsService.fileExists(this.newFileName)) {
