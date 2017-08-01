@@ -4,7 +4,9 @@
             md-on-select="alert(click!);">
       <ng-template md-tab-label>
         {{tab.filename | extractFilename}}
-        <md-icon (click)="handleTabClose($event, tab.filename)">clear</md-icon>
+        <md-icon
+          style="font-size: inherit; height: 100%; display: table-cell;"
+          (click)="handleTabClose($event, tab.filename)">clear</md-icon>
       </ng-template>
     </md-tab>
   </md-tab-group>

@@ -94,3 +94,12 @@ html, body {
 .ngx-contextmenu li:hover {
   background-color: #ccc;
 }
+
+/* TABS */
+
+.mat-tab-label {
+  display: table !important;
+  height: 35px !important;
+  line-height: 35px !important;
+  min-width: inherit !important;
+}
