@@ -24,7 +24,7 @@ md-sidenav-container md-sidenav {
   -webkit-flex-grow: 1;
   flex-grow: 1;
   border: 1px solid grey;
-  overflow: scroll;
+  overflow: hidden;
 }
 
 
@@ -36,8 +36,6 @@ md-sidenav-container div.container {
 }
 
 md-sidenav-container div.container div.half {
-  /* -webkit-flex-grow: 1;
-  flex-grow: 1; */
   border: 1px solid grey;
   width: 50%;
   display: flex;
@@ -49,7 +47,8 @@ app-error-console {
   height: 15%;
   display: block;
   font-family: monospace;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 app-monaco-editor {
