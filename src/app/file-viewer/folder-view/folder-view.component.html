@@ -1,18 +1,18 @@
-<md-list *ngIf="folderList">
+<md-list *ngIf="folderList" dense>
   <md-list-item
   *ngFor="let ow of folderList"
   [contextMenu]="(ow.object.folderName) ? folderMenu : fileMenu"
   (click)="objectClickEvent($event, ow.object)"
   [contextMenuSubject]="ow"
-  [style]="generateMarginStyle(ow.level)">
+  [style]="generateListStyle(ow)">
     {{(ow.object.folderName) ?
-        ow.object.folderName : ow.object.fileName | extractFilename}}
+        ow.object.folderName: ow.object.fileName | extractFilename}}
   </md-list-item>
 </md-list>
 
 <context-menu #fileMenu>
   <ng-template contextMenuItem
-  (execute)="removeFile($event, item)">
+  (execute)="removeFile($event)">
     Delete File
   </ng-template>
 </context-menu>

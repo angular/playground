@@ -21,10 +21,12 @@ export class FolderViewComponent {
     private sanitizer: DomSanitizer) {
   }
 
-  generateMarginStyle(level) {
-    return this.sanitizer.bypassSecurityTrustStyle(
-      `margin-left: calc(10px * ${level})`
-    );
+  generateListStyle(ow) {
+    let string = `padding-left: calc(10px * ${ow.level});`;
+    if (ow.object.fileName) {
+      string += "cursor: pointer;"
+    }
+    return this.sanitizer.bypassSecurityTrustStyle(string);
   }
 
   @ViewChild('folderMenu') public folderMenu: ContextMenuComponent;
@@ -109,6 +111,6 @@ export class RemoveFileDialog {
   `
 })
 export class NewFileDialog {
-  constructor(private dialogRef: MdDialogRef<NewFileDialog>,
+  constructor(public dialogRef: MdDialogRef<NewFileDialog>,
               @Inject(MD_DIALOG_DATA) public data: any) {}
 }
