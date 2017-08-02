@@ -107,6 +107,7 @@ let api = {
 const FILENAME_FOR_GENERAL_ERRORS = "General errors";
 
 function formatDiagnostics(cwd, diags) {
+  console.log(diags);
   if (diags && diags.length) {
 
     let isTsErrors = isTsDiagnostics(diags);
@@ -131,6 +132,10 @@ function formatDiagnostics(cwd, diags) {
         }
         message = diag.messageText;
 
+        // hack to get around cannot find ngfactory errors
+        if (message.indexOf("Cannot find module") != -1 && message.indexOf("ngfactory" != -1))
+          return {};
+
         if (!errorObject.hasOwnProperty(fileName)) {
           errorObject[fileName] = [];
         }
@@ -142,6 +147,18 @@ function formatDiagnostics(cwd, diags) {
           characterNumber: characterNumber,
           message: message
         });
+      }
+      else if (diag.message.indexOf("Template parse errors") == -1) {
+        if (!errorObject.hasOwnProperty(FILENAME_FOR_GENERAL_ERRORS))
+          errorObject[FILENAME_FOR_GENERAL_ERRORS] = [];
+
+        errorObject[FILENAME_FOR_GENERAL_ERRORS].push({
+          type: 'GENERAL_ERRORS',
+          fileName: FILENAME_FOR_GENERAL_ERRORS,
+          lineNumber: '',
+          characterNumber: '',
+          message: diag.message,
+        })
       }
       else {
         type = "TEMPLATE_PARSE_ERROR";
@@ -208,10 +225,12 @@ function check(cwd, ...args) {
                                   if (diags && diags[0]) {
                                     return formatDiagnostics(cwd, diags);
                                   }
-                                })
-                                .filter(diag => Object.keys(diag).length > 0)
-                                .reduce((combined, diag) => Object.assign(combined, diag), {});
-    throw syntaxError(JSON.stringify(formattedObjects));
+                                });
+    formattedObjects = formattedObjects.filter(diag => Object.keys(diag).length > 0)
+                         .reduce((combined, diag) => Object.assign(combined, diag), {});
+    if (Object.keys(formattedObjects).length > 0) {
+      throw syntaxError(JSON.stringify(formattedObjects));
+    }
   }
 }
 
@@ -242,7 +261,9 @@ function compile(fileBundle) {
     var compilerStatus = ngc.performCompilation("/", parsed.fileNames, parsed.options,
       ngOptions, handleCompilerError, check, new BrowserCompilerHost);
   } catch(e) {
+    console.log(e);
     throw e;
+    return;
   }
 
   // compilation is done, let's build the bundle
@@ -265,7 +286,9 @@ function makeBundle() {
     "btoa": btoa,
   }
 
-  var angularVersion = "@4.2.6";
+  // use the most recent angular version, can be overrided to a specific version
+  // as well, e.g. angularVersion="@4.2.6"
+  var angularVersion = "";
 
   var bundleMap = {
 
@@ -274,13 +297,13 @@ function makeBundle() {
     '@angular/common': 'https://unpkg.com/@angular/common' + angularVersion + '/@angular/common.es5.js',
     '@angular/compiler': 'https://unpkg.com/@angular/compiler' + angularVersion + '/@angular/compiler.es5.js',
     '@angular/platform-browser': 'https://unpkg.com/@angular/platform-browser' + angularVersion + '/@angular/platform-browser.es5.js',
-    '@angular/platform-browser-dynamic': 'https://unpkg.com/@angular/platform-browser-dynamic' + angularVersion + '/bundles/platform-browser-dynamic.umd.js',
-    '@angular/http': 'https://unpkg.com/@angular/http' + angularVersion + '/bundles/http.umd.js',
-    '@angular/router': 'https://unpkg.com/@angular/router' + angularVersion + '/bundles/router.umd.js',
-    '@angular/forms': 'https://unpkg.com/@angular/forms' + angularVersion + '/bundles/forms.umd.js',
-    '@angular/animations': 'https://unpkg.com/@angular/animations' + angularVersion + '/bundles/animations.umd.js',
-    '@angular/platform-browser/animations': 'https://unpkg.com/@angular/platform-browser' + angularVersion + '/bundles/platform-browser-animations.umd.js',
-    '@angular/animations/browser': 'https://unpkg.com/@angular/animations' + angularVersion + '/bundles/animations-browser.umd.js',
+    '@angular/platform-browser-dynamic': 'https://unpkg.com/@angular/platform-browser-dynamic' + angularVersion + '/@angular/platform-browser-dynamic.es5.js',
+    '@angular/http': 'https://unpkg.com/@angular/http' + angularVersion + '/@angular/http.es5.js',
+    '@angular/router': 'https://unpkg.com/@angular/router' + angularVersion + '/@angular/router.es5.js',
+    '@angular/forms': 'https://unpkg.com/@angular/forms' + angularVersion + '/@angular/forms.es5.js',
+    '@angular/animations': 'https://unpkg.com/@angular/animations' + angularVersion + '/@angular/animations.es5.js',
+    '@angular/platform-browser/animations': 'https://unpkg.com/@angular/platform-browser' + angularVersion + '/@angular/platform-browser-animations.es5.js',
+    '@angular/animations/browser': 'https://unpkg.com/@angular/animations' + angularVersion + '/@angular/animations-browser.es5.js',
 
     '@angular/core/testing': 'https://unpkg.com/@angular/core' + angularVersion + '/bundles/core-testing.umd.js',
     '@angular/common/testing': 'https://unpkg.com/@angular/common' + angularVersion + '/bundles/common-testing.umd.js',
