@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { VirtualFsService } from '../virtual-fs.service';
 import { TabControlService } from '../shared/tab-control.service';
+import { ErrorHandlerService } from '../shared/error-handler.service';
 
 interface EditorConfigurations {
   language: string;
@@ -25,10 +26,18 @@ export class MonacoEditorComponent {
   fileErrorMessages: any[] = [];
   tabs: TabState[] = [];
 
-  constructor(public fsService: VirtualFsService, private tabControlService: TabControlService) {
+  constructor(public fsService: VirtualFsService, private tabControlService: TabControlService, private errorHandler: ErrorHandlerService) {
     tabControlService.tabCreated$.subscribe(this.createNewTab.bind(this));
     tabControlService.tabClosed$.subscribe(this.handleTabClose.bind(this, null));
-    tabControlService.fileErrorsSet$.subscribe(errors => {this.fileErrorMessages = errors;})
+    errorHandler.$errorsGenerated.subscribe((errors: {}) => {
+      for (let filename of Object.keys(errors)) {
+        if (this.fsService.fileExists(filename)) {
+          this.fileErrorMessages = errors[filename];
+          this.tabControlService.createTab(filename);
+          return;
+        }
+      }
+    });
   }
 
   changeEvent(value: string) {

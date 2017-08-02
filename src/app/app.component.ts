@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { VirtualFsService } from './virtual-fs.service';
 import { CompilerService } from './compiler.service';
+import { ErrorHandlerService } from './shared/error-handler.service';
 import { MdSnackBar } from '@angular/material';
 
 
@@ -16,20 +17,10 @@ export class AppComponent {
 
   generatedBundle;
 
-  errorObject = {};
-
   constructor(public fsService: VirtualFsService,
               private compilerService: CompilerService,
+              private errorHandler: ErrorHandlerService,
               public snackBar: MdSnackBar) { }
-
-  private setConsoleErrorMessage(error: string) {
-    if (error === "") {
-      this.errorObject = {}
-    }
-    else {
-      this.errorObject = JSON.parse(error);
-    }
-  }
 
   compileButtonHandler(event) {
     this.snackBar.open("Compiling...", "Dismiss");
@@ -37,11 +28,11 @@ export class AppComponent {
       .then((compiled_bundle) => {
         this.generatedBundle = compiled_bundle;
         this.snackBar.open("Compilation Successful!", "Dismiss");
-        this.setConsoleErrorMessage("");
+        this.errorHandler.setErrors({});
       }).catch((error) => {
         // display the error - replace with injection into an error box
         this.snackBar.open("Compilation Failed!", "Dismiss");
-        this.setConsoleErrorMessage(error);
+        this.errorHandler.setErrors(JSON.parse(error));
       });
   }
 }

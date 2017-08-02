@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { ExtractFilenamePipe } from './extract-filename.pipe';
 import { TabControlService } from './tab-control.service';
+import { ErrorHandlerService } from './error-handler.service';
 
 @NgModule({
   imports: [
@@ -12,7 +13,8 @@ import { TabControlService } from './tab-control.service';
     ExtractFilenamePipe,
   ],
   providers: [
-    TabControlService
+    TabControlService,
+    ErrorHandlerService
   ],
   exports: [
     ExtractFilenamePipe,

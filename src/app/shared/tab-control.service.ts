@@ -22,9 +22,4 @@ export class TabControlService {
   closeTab(filename: string) {
     this.tabClosedSource.next(filename);
   }
-
-  setFileErrors(errors: any[]) {
-    this.fileErrorsSource.next(errors);
-  }
-
 }

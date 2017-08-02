@@ -47,7 +47,7 @@ import { ErrorConsoleComponent } from './error-console/error-console.component';
   ],
   providers: [
     VirtualFsService,
-    CompilerService
+    CompilerService,
   ],
   bootstrap: [AppComponent]
 })

@@ -1,5 +1,5 @@
 <div>
-  <div *ngFor="let fileErrors of _errorList">
+  <div *ngFor="let fileErrors of errorList">
     <md-list dense>
       <h3 md-subheader>{{fileErrors.fileName}}</h3>
       <md-list-item *ngFor="let error of fileErrors.errors">
