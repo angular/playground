@@ -19,7 +19,7 @@ export class UpdateIframeDirective implements OnChanges{
       this.fsService.writeFile(filename, generatedBundle.fileSystem[filename].text);
     }
 
-    const html = this.fsService.readFile("index.html");
+    const html = this.fsService.readFile("/index.html");
 
     const parser = new DOMParser();
 

@@ -35,6 +35,14 @@ function readConfiguration(project, basePath) {
 
   const virtualFsFileReader = (path) => fs.readFileSync(path);
 
+  /*
+  TODO: having exclude[] in tsconfig leads to inefficient compilation,
+        because it then requires that parseConfigHost.readDirectory gets
+        called. this has to filter through every file in the file system,
+        and as such leads to a lot of overhead on compilation.
+
+  */
+
   let tsconfig = `
     {
       "compilerOptions": {
@@ -49,10 +57,11 @@ function readConfiguration(project, basePath) {
         "skipLibCheck": true,
         "outDir": "dist"
       },
-      "files": ["component.ts", "main.ts"],
       "angularCompilerOptions": {
-        "genDir": "."
-      }
+        "genDir": "dist"
+      },
+      "exclude": [
+      ]
     }
   `;
 
@@ -61,7 +70,20 @@ function readConfiguration(project, basePath) {
   const parseConfigHost = {
     useCaseSensitiveFileNames: true,
     fileExists: fs.fileExists,
-    readDirectory: fs.readDirectory,
+    readDirectory: (basePath, supportedExtensions, exclude, include) => {
+      let files = Object.keys(fs.vfs.fileSystem).filter(filename => {
+        // check that the extension is valid
+        let valid_extension = false;
+        for (let i = 0; i < supportedExtensions.length; i++) {
+          if (filename.indexOf(supportedExtensions[i]) != -1) {
+            valid_extension = true;
+            break;
+          }
+        }
+        return valid_extension;
+      });
+      return files;
+    },
     readFile: virtualFsFileReader
   };
   const parsed = ts.parseJsonConfigFileContent(config, parseConfigHost, basePath, existingOptions);
@@ -348,10 +370,10 @@ function makeBundle() {
         }
 
         if (importer && importer.indexOf("/dist/") == 0 && importee.indexOf("./") == 0) {
-          var loc = importee.replace("./", "/dist/")
-          return loc;
+          var split_importer = importer.split("/").filter(s => !!s);
+          var importer_path = "/" + split_importer.slice(0, split_importer.length - 1).join("/") + "/";
+          return path.resolve(importer_path, importee);
         }
-
         return importee;
       },
       load: function (id) {

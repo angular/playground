@@ -201,7 +201,7 @@ export class MainModule {
 </div>
     `);
 
-    this.writeFile("index.html", `<html>
+    this.writeFile("/index.html", `<html>
   <head>
     <!--
       The below scripts will be provided in the iframe for you. There is no
