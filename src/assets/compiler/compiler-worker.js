@@ -190,9 +190,9 @@ function formatDiagnostics(cwd, diags) {
 
 
     }
-    return JSON.stringify(errorObject);
+    return errorObject;
   } else
-    return '';
+    return {};
 }
 
 function handleCompilerError(e) {
@@ -204,14 +204,14 @@ function handleCompilerError(e) {
 
 function check(cwd, ...args) {
   if (args.some(diags => !!(diags && diags[0]))) {
-    throw syntaxError(args.map(diags => {
-                            if (diags && diags[0]) {
-                              console.log("Diags in check: ", diags);
-                              return formatDiagnostics(cwd, diags);
-                            }
-                          })
-                          .filter(message => !!message)
-                          .join(''));
+    let formattedObjects = args.map(diags => {
+                                  if (diags && diags[0]) {
+                                    return formatDiagnostics(cwd, diags);
+                                  }
+                                })
+                                .filter(diag => Object.keys(diag).length > 0)
+                                .reduce((combined, diag) => Object.assign(combined, diag), {});
+    throw syntaxError(JSON.stringify(formattedObjects));
   }
 }
 
