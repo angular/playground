@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TabControlService } from '../shared/tab-control.service';
+import { VirtualFsService } from '../virtual-fs.service';
 
 @Component({
   selector: 'app-error-console',
@@ -19,13 +20,15 @@ export class ErrorConsoleComponent {
       }
     });
 
-    let firstError = this._errorList[0];
-    if (firstError) {
-      this.tabControlService.createTab(firstError.fileName);
-      this.tabControlService.setFileErrors(firstError.errors);
+    for (let error of this._errorList) {
+      if (this.fsService.fileExists(error.fileName)) {
+        this.tabControlService.createTab(error.fileName);
+        this.tabControlService.setFileErrors(error.errors);
+      }
     }
   }
 
-  constructor(private tabControlService: TabControlService) { }
+  constructor(private tabControlService: TabControlService,
+    private fsService: VirtualFsService) { }
 
 }

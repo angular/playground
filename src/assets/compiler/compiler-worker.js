@@ -104,6 +104,8 @@ let api = {
 
 /* TYPESCRIPT SCRIPT PARSING STUFF */
 
+const FILENAME_FOR_GENERAL_ERRORS = "General errors";
+
 function formatDiagnostics(cwd, diags) {
   if (diags && diags.length) {
 
@@ -117,10 +119,16 @@ function formatDiagnostics(cwd, diags) {
 
       if (isTsErrors) {
         type = "TYPESCRIPT_DIAGNOSTIC_ERROR";
-        fileName = diag.file.path;
-        let {line, character} = ts.getLineAndCharacterOfPosition(diag.file, diag.start);
-        lineNumber = line;
-        characterNumber = character;
+        if (diag.file) {
+          fileName = diag.file.path;
+          let {line, character} = ts.getLineAndCharacterOfPosition(diag.file, diag.start);
+          lineNumber = line;
+          characterNumber = character;
+        }
+        else {
+          fileName = FILENAME_FOR_GENERAL_ERRORS;
+          lineNumber = characterNumber = '';
+        }
         message = diag.messageText;
 
         if (!errorObject.hasOwnProperty(fileName)) {
@@ -192,7 +200,6 @@ function handleCompilerError(e) {
     type: COMPILATION_ERROR,
     data: String(e)
   });
-  throw(e);
 }
 
 function check(cwd, ...args) {
@@ -235,8 +242,6 @@ function compile(fileBundle) {
     var compilerStatus = ngc.performCompilation("/", parsed.fileNames, parsed.options,
       ngOptions, handleCompilerError, check, new BrowserCompilerHost);
   } catch(e) {
-    if (isNgcSyntaxError)
-      return;
     throw e;
   }
 

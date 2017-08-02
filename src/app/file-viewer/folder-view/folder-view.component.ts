@@ -36,7 +36,7 @@ export class FolderViewComponent {
     this.tabControlService.createTab(file.fileName);
   }
 
-  removeFile($event, item) {
+  removeFile($event) {
     let fileName = $event.item.object.fileName;
     if (this.fsService.fileExists(fileName)) {
       let dialogRef = this.dialog.open(RemoveFileDialog, {
@@ -52,12 +52,9 @@ export class FolderViewComponent {
   }
 
   removeFolder($event) {
-    console.log($event);
     let path = $event.item.object.fullPath;
-    console.log(`full folder path: ${path}`);
 
     for (let filename of this.fsService.getFileList()) {
-      console.log(filename);
       if (filename.indexOf(path) == 0) {
         this.fsService.deleteFile(filename);
       }
