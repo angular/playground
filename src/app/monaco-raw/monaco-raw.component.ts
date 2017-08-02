@@ -2,6 +2,8 @@ import { Component, ViewChild, ElementRef, AfterViewInit, Input, Output, forward
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Headers, Http } from '@angular/http';
 import { VirtualFsService } from '../virtual-fs.service';
+import { ErrorHandlerService } from '../shared/error-handler.service';
+import { TabControlService } from '../shared/tab-control.service';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -69,7 +71,31 @@ export class MonacoRawComponent implements AfterViewInit {
   private decorations = [];
   private model = null;
 
-  constructor(private http: Http, private fsService: VirtualFsService) { }
+  constructor(private http: Http, private fsService: VirtualFsService,
+              private errorHandler: ErrorHandlerService,
+              private tabControl: TabControlService)
+  {
+    errorHandler.$specificErrorTargeted.subscribe((specificError: any) => {
+      console.log(specificError);
+      if (this._editor) {
+        let line = specificError.lineNumber;
+        let character = specificError.characterNumber;
+        this.decorations = this._editor.deltaDecorations(this.decorations, [
+          {
+            range: new monaco.Range(line, character, line, character),
+            options: {
+              isWholeLine: true,
+              className: 'errorDecorationHighlight'
+            }
+          }
+        ]);
+        if (this.fsService.fileExists(specificError.fileName)) {
+          this.tabControl.createTab(specificError.fileName);
+        }
+
+      }
+    })
+  }
 
   get value(): string {
     return this._value;

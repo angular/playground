@@ -56,7 +56,8 @@ table {
 
 html, body {
 	height: 100%;
-	overflow: hidden;
+  overflow: hidden;
+  background: #fafafa;
 }
 
 
@@ -102,4 +103,12 @@ html, body {
   height: 35px !important;
   line-height: 35px !important;
   min-width: inherit !important;
+}
+
+
+/* ERROR DECORATIONS! */
+
+.errorDecorationHighlight {
+  background: red;
+  opacity: 0.3;
 }

@@ -5,3 +5,7 @@ li {
 strong {
   font-weight: bold;
 }
+
+error-display md-list {
+  cursor: pointer;
+}
