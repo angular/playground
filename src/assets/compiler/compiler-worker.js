@@ -356,23 +356,18 @@ function makeBundle() {
     treeshake: false,
     plugins: [{
       resolveId(importee, importer) {
-        // handle cases like ./util/root imported by rxjs/Observable
-        if (importer && importer.indexOf("rxjs") == 0 && importee.indexOf("./") == 0) {
-          var base = importer.split(path.sep);
-          base = base.slice(0, base.length - 1).join(path.sep) + "/";
-          var loc = importee.replace("./", base);
-          return loc;
-        }
-
-        if (importer && importer.indexOf("rxjs") == 0 && importee.indexOf("../") == 0) {
-          var loc = "rxjs/" + importee.replace("../", "");
-          return loc;
-        }
-
-        if (importer && importer.indexOf("/dist/") == 0 && importee.indexOf("./") == 0) {
+        var resolvePath = function(importer, importee) {
           var split_importer = importer.split("/").filter(s => !!s);
           var importer_path = "/" + split_importer.slice(0, split_importer.length - 1).join("/") + "/";
           return path.resolve(importer_path, importee);
+        }
+
+        if (importer && importer.indexOf("rxjs") == 0) {
+          return resolvePath(importer, importee).slice(1);
+        }
+
+        if (importer && importer.indexOf("/dist/") == 0 && importee.indexOf("./") == 0) {
+          return resolvePath(importer, importee);
         }
         return importee;
       },
