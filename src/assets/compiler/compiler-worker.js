@@ -248,7 +248,7 @@ function check(cwd, ...args) {
                                     return formatDiagnostics(cwd, diags);
                                   }
                                 });
-    formattedObjects = formattedObjects.filter(diag => Object.keys(diag).length > 0)
+    formattedObjects = formattedObjects.filter(diag => (diag) ? Object.keys(diag).length > 0 : false)
                          .reduce((combined, diag) => Object.assign(combined, diag), {});
     if (Object.keys(formattedObjects).length > 0) {
       throw syntaxError(JSON.stringify(formattedObjects));
