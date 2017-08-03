@@ -71,6 +71,9 @@ export class MonacoEditorComponent {
       case "js":
         language="javascript";
         break;
+      case "css":
+        language="css";
+        break;
 
     }
     this.tabs.push({

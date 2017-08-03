@@ -154,6 +154,10 @@ function formatDiagnostics(cwd, diags) {
         }
         message = diag.messageText;
 
+        // sometimes diag.messageText is an object
+        // this hack gets around that
+        while (message.messageText) { message = message.messageText }
+
         // hack to get around cannot find ngfactory errors
         if (message.indexOf("Cannot find module") != -1 && message.indexOf("ngfactory" != -1))
           return {};
