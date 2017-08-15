@@ -142,7 +142,10 @@ export class MonacoRawComponent implements AfterViewInit {
       noImplicitAny: true,
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
       module: monaco.languages.typescript.ModuleKind.CommonJS,
-      typeRoots: ["node_modules/"]
+      typeRoots: ["node_modules/"],
+      plugins: [
+        {"name": "@angular/language-service"}
+      ]
     });
 
     this.http.get("/assets/compiler/compiler_bundle.json")

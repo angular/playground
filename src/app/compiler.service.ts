@@ -24,6 +24,28 @@ export class CompilerService {
   constructor(private http: HttpClient) {
     this.compilerWorker = new Worker('/assets/compiler/compiler-worker.js');
     this.compilerWorker.onmessage = this.handleWorkerMessage.bind(this);
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/proxy_worker.js', {scope: '/'});
+    }
+    else {
+      alert("Service worker not supported!");
+    }
+  }
+
+  private messageServiceWorker(message) {
+    return new Promise(function(resolve, reject) {
+      var messageChannel = new MessageChannel();
+      messageChannel.port1.onmessage = function(event) {
+        if (event.data.error) {
+          reject(event.data.error);
+        }
+        else {
+          resolve(event.data);
+        }
+      }
+      navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
+    });
   }
 
   private handleWorkerMessage(message) {
@@ -45,17 +67,28 @@ export class CompilerService {
     }
   }
 
-  compile(filesToCompile) {
-    console.log("Starting compilation!");
+  private dispatchCompilation(filesToCompile) {
     return new Promise((resolve, reject) => {
-
       this.compilerWorker.postMessage({
         type: WorkerMessageType.COMPILATION_START,
-        data: filesToCompile,
+        data: filesToCompile
       });
 
       this.compilationResolve = resolve;
       this.compilationReject = reject;
+    });
+  }
+
+  compile(filesToCompile) {
+    return new Promise((resolve, reject) => {
+      this.dispatchCompilation(filesToCompile)
+          .then((compiledBundle) => { // compilation was successful
+            this.messageServiceWorker(compiledBundle).then((r) => {
+              resolve(compiledBundle);
+              console.log(`Response: `, r);
+            });
+          })
+          .catch((data) => {reject(data)}); // compilation errored
     });
   }
 }

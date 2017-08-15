@@ -24,9 +24,7 @@ function instantiate() {
 
   let vfs = fs.vfs;
   // get the compiler dependency bundle
-
   fs.loadFilesIntoFileSystem(JSON.parse(get('/assets/compiler/compiler_bundle.json')));
-
   importScripts('browser-bundle.umd.js');
 }
 
@@ -291,149 +289,20 @@ function compile(fileBundle) {
     throw e;
     return;
   }
-
-  // compilation is done, let's build the bundle
-  makeBundle();
-}
-
-function makeBundle() {
-
-  var start_bundling_time = performance.now();
-  console.log(`Starting bundling at ${start_bundling_time}`);
-
-  // shim around window - deal with performance calls in rollup
-
-  window = {
-    "performance": {
-      "now": function () {
-        return 0;
-      }
-    },
-    "btoa": btoa,
+  var i;
+  files = Object.keys(fs.vfs.fileSystem);
+  var dist_fs = fs.buildVfs();
+  for (i = 0; i < files.length; i++) {
+    if (files[i].indexOf("/dist/") == 0) {
+      dist_fs.fileSystem[files[i]] = fs.vfs.getSourceFile(files[i]);
+    }
   }
 
-  // use the most recent angular version, can be overrided to a specific version
-  // as well, e.g. angularVersion="@4.2.6"
-  var angularVersion = "";
-
-  var bundleMap = {
-
-    'app': './src',
-    '@angular/core': 'https://unpkg.com/@angular/core' + angularVersion + '/@angular/core.es5.js',
-    '@angular/common': 'https://unpkg.com/@angular/common' + angularVersion + '/@angular/common.es5.js',
-    '@angular/compiler': 'https://unpkg.com/@angular/compiler' + angularVersion + '/@angular/compiler.es5.js',
-    '@angular/platform-browser': 'https://unpkg.com/@angular/platform-browser' + angularVersion + '/@angular/platform-browser.es5.js',
-    '@angular/platform-browser-dynamic': 'https://unpkg.com/@angular/platform-browser-dynamic' + angularVersion + '/@angular/platform-browser-dynamic.es5.js',
-    '@angular/http': 'https://unpkg.com/@angular/http' + angularVersion + '/@angular/http.es5.js',
-    '@angular/router': 'https://unpkg.com/@angular/router' + angularVersion + '/@angular/router.es5.js',
-    '@angular/forms': 'https://unpkg.com/@angular/forms' + angularVersion + '/@angular/forms.es5.js',
-    '@angular/animations': 'https://unpkg.com/@angular/animations' + angularVersion + '/@angular/animations.es5.js',
-    '@angular/platform-browser/animations': 'https://unpkg.com/@angular/platform-browser' + angularVersion + '/@angular/platform-browser-animations.es5.js',
-    '@angular/animations/browser': 'https://unpkg.com/@angular/animations' + angularVersion + '/@angular/animations-browser.es5.js',
-
-    '@angular/core/testing': 'https://unpkg.com/@angular/core' + angularVersion + '/@angular/core/testing.es5.js',
-    '@angular/common/testing': 'https://unpkg.com/@angular/common' + angularVersion + '/@angular/common/testing.es5.js',
-    '@angular/compiler/testing': 'https://unpkg.com/@angular/compiler' + angularVersion + '/@angular/compiler/testing.es5.js',
-    '@angular/platform-browser/testing': 'https://unpkg.com/@angular/platform-browser' + angularVersion + '/@angular/platform-browser/testing.es5.js',
-    '@angular/platform-browser-dynamic/testing': 'https://unpkg.com/@angular/platform-browser-dynamic' + angularVersion + '/@angular/platform-browser-dynamic/testing.es5.js',
-    '@angular/http/testing': 'https://unpkg.com/@angular/http' + angularVersion + '/@angular/http/testing.es5.js',
-    '@angular/router/testing': 'https://unpkg.com/@angular/router' + angularVersion + '/@angular/router/testing.es5.js',
-    'tslib': 'https://unpkg.com/tslib@1.7.1/tslib.es6.js',
-    'rxjs': 'https://unpkg.com/rxjs',
-    'typescript': 'https://unpkg.com/typescript@2.2.1/lib/typescript.js',
-    "rxjs/Subject": "https://unpkg.com/rxjs@5.4.2/bundles/Rx.js",
-  }
-
-  // fixes issues with rxjs bundling
-  var intro = "function __extends(d,b) {__extends$1(d,b);};";
-
-  rollup.rollup({
-    entry: "/dist/main.js",
-    external: [
-      'rxjs'
-    ],
-    paths: {
-      "rxjs/Subject": "https://unpkg.com/rxjs@5.4.2/bundles/Rx.js",
-    },
-    format: 'umd',
-    cache: previous_bundle,
-    treeshake: false,
-    plugins: [{
-      resolveId(importee, importer) {
-        var resolvePath = function(importer, importee) {
-          var split_importer = importer.split("/").filter(s => !!s);
-          var importer_path = "/" + split_importer.slice(0, split_importer.length - 1).join("/") + "/";
-          return path.resolve(importer_path, importee);
-        }
-
-        if (importer && importer.indexOf("rxjs") == 0) {
-          return resolvePath(importer, importee).slice(1);
-        }
-
-        if (importer && importer.indexOf("/dist/") == 0 && importee.indexOf("./") == 0) {
-          return resolvePath(importer, importee);
-        }
-        return importee;
-      },
-      load: function (id) {
-        // if we are in dist
-        if (id.indexOf("/dist/") == 0) {
-          if (id.indexOf(".js") == -1) {
-            id += ".js";
-          }
-          return fs.readFileSync(id);
-        }
-        // if we're a rxjs dependency
-        else if (id.indexOf("rxjs") == 0) {
-          var url = "/assets/compiler/" + id + ".js";
-          return get(url);
-        }
-        // if we're an import relative to
-        else if (id.indexOf("./") == 0) {
-          var newId = id.replace("./", "/dist/") + ".js";
-          return fs.readFileSync(newId);
-        }
-        return get(bundleMap[id]);
-      }
-    }]
-  }).then(function (bundle) {
-    bundle.generate({
-      "format": "umd",
-      "moduleName": "angularApp",
-      "intro": intro,
-      "sourceMap": "inline",
-    }).then(generated => {
-      // write the created bundle
-      fs.writeFileSync("/dist/bundle.js", generated.code);
-
-
-      // now, we're done bundling, so let's generate a virtual file system for
-      // only the stuff in dist
-
-      var i;
-      var files = Object.keys(fs.vfs.fileSystem);
-      var dist_fs = fs.buildVfs();
-      for (i = 0; i < files.length; i++) {
-        if (files[i].indexOf("/dist/") == 0) {
-          dist_fs.fileSystem[files[i]] = fs.vfs.getSourceFile(files[i]);
-        }
-      }
-
-      postMessage({
-        type: COMPILATION_END,
-        data: dist_fs,
-      })
-    });
-
-    // cache the generate bundle
-    previous_bundle = bundle;
-
-    var end_bundling_time = performance.now();
-    console.log(`Ending bundling at ${end_bundling_time}`);
-    console.log(`Bundling took ${end_bundling_time - start_bundling_time}`);
-  });
+  postMessage({
+    type: COMPILATION_END,
+    data: dist_fs,
+  })
 }
-
 
 function handleMessage(data) {
   switch (data.type) {
@@ -444,8 +313,6 @@ function handleMessage(data) {
       break;
   }
 }
-
-postMessage('Hello World!');
 
 onmessage = function (e) {
   handleMessage(e.data);
