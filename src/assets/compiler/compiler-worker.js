@@ -18,7 +18,6 @@ importScripts('https://unpkg.com/rollup@0.45.2/dist/rollup.browser.js');
 // necessary globals
 var port;
 var window;
-var previous_bundle = undefined;
 
 function instantiate() {
 
@@ -98,7 +97,7 @@ function readConfiguration(project, basePath) {
   return { parsed, ngOptions };
 }
 
-function isTsDiagnostics(diagnostics){
+function isTsDiagnostics(diagnostics) {
   return diagnostics && diagnostics[0] && (diagnostics[0].file || diagnostics[0].messageText);
 }
 
@@ -133,7 +132,7 @@ function formatDiagnostics(cwd, diags) {
     let isTsErrors = isTsDiagnostics(diags);
 
     let errorObject = {};
-    for(let i = 0; i < diags.length; i++) {
+    for (let i = 0; i < diags.length; i++) {
       let diag = diags[i];
 
       let type, fileName, lineNumber, characterNumber, message;
@@ -142,7 +141,7 @@ function formatDiagnostics(cwd, diags) {
         type = "TYPESCRIPT_DIAGNOSTIC_ERROR";
         if (diag.file) {
           fileName = diag.file.path;
-          let {line, character} = ts.getLineAndCharacterOfPosition(diag.file, diag.start);
+          let { line, character } = ts.getLineAndCharacterOfPosition(diag.file, diag.start);
           lineNumber = line;
           characterNumber = character;
         }
@@ -246,12 +245,12 @@ function handleCompilerError(e) {
 function check(cwd, ...args) {
   if (args.some(diags => !!(diags && diags[0]))) {
     let formattedObjects = args.map(diags => {
-                                  if (diags && diags[0]) {
-                                    return formatDiagnostics(cwd, diags);
-                                  }
-                                });
+      if (diags && diags[0]) {
+        return formatDiagnostics(cwd, diags);
+      }
+    });
     formattedObjects = formattedObjects.filter(diag => (diag) ? Object.keys(diag).length > 0 : false)
-                         .reduce((combined, diag) => Object.assign(combined, diag), {});
+      .reduce((combined, diag) => Object.assign(combined, diag), {});
     if (Object.keys(formattedObjects).length > 0) {
       throw syntaxError(JSON.stringify(formattedObjects));
     }
@@ -279,12 +278,12 @@ function compile(fileBundle) {
   try {
     // run the compiler
 
-    let {parsed, ngOptions} = readConfiguration(".", "/");
+    let { parsed, ngOptions } = readConfiguration(".", "/");
 
     const ngc = ng.compiler_cli_browser;
     var compilerStatus = ngc.performCompilation("/", parsed.fileNames, parsed.options,
       ngOptions, handleCompilerError, check, new BrowserCompilerHost);
-  } catch(e) {
+  } catch (e) {
     console.log(e);
     throw e;
     return;

@@ -83,8 +83,10 @@ export class CompilerService {
     return new Promise((resolve, reject) => {
       this.dispatchCompilation(filesToCompile)
           .then((compiledBundle) => { // compilation was successful
-            this.messageServiceWorker(compiledBundle).then((r) => {
-              resolve(compiledBundle);
+            this.messageServiceWorker(compiledBundle).then((r: any) => {
+              if (r.ack) {
+                resolve(compiledBundle);
+              }
               console.log(`Response: `, r);
             });
           })

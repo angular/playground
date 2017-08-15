@@ -5,12 +5,12 @@ import { Http } from '@angular/http';
 @Directive({
   selector: '[appUpdateIframe]'
 })
-export class UpdateIframeDirective implements OnChanges{
+export class UpdateIframeDirective implements OnChanges {
 
   @Input('appUpdateIframe') generatedBundle;
 
   constructor(private iframeContainer: ElementRef,
-              private fsService: VirtualFsService, private http:Http) { }
+    private fsService: VirtualFsService, private http: Http) { }
 
   private updateIFrame(generatedBundle) {
     const files: string[] = Object.keys(generatedBundle.fileSystem);
@@ -25,6 +25,7 @@ export class UpdateIframeDirective implements OnChanges{
     }
     const iframe = document.createElement("iframe");
     iframe.src = "/assets/iframe.html";
+    iframe.style.cssText = "width: 100%";
     container.appendChild(iframe);
   }
 
