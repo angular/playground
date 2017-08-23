@@ -15,7 +15,7 @@ self.addEventListener('activate', function (event) {
 });
 
 self.addEventListener("fetch", function (event) {
-  console.log("Fetch event on url: ", event.request.url);
+  // console.log("Fetch event on url: ", event.request.url);
 
   // if its in /dist/, return straight from the file system
   var loc = event.request.url.indexOf("/dist/");
@@ -31,7 +31,7 @@ self.addEventListener("fetch", function (event) {
   if (event.request.url.indexOf("https://unpkg.com") == 0) {
     event.respondWith(
       caches.match(event.request).then(function (resp) {
-        console.log(`got a match of: `, resp);
+        // console.log(`got a match of: `, resp);
         return resp || fetch(event.request).then(function (response) {
           return caches.open('v1').then(function (cache) {
             cache.put(event.request, response.clone());

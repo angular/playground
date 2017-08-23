@@ -5,15 +5,24 @@ var COMPILATION_ERROR = 2;
 
 // import dependencies
 importScripts('CompilerWorkerMessage.js');
-importScripts('xhr.js');
-importScripts('Reflect.js');
-importScripts('typescript.js');
-importScripts('fs_bundle.js');
-importScripts('path.js');
+importScripts('built/Reflect.js');
+importScripts('built/typescript.js');
+importScripts('built/fs_bundle.js');
+importScripts('built/path.js');
 importScripts('BrowserCompilerHost.js');
 importScripts('https://google.github.io/traceur-compiler/bin/traceur.js');
 importScripts('https://unpkg.com/rollup@0.45.2/dist/rollup.browser.js');
 
+function get(url) {
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, false);
+    xhr.send();
+    return xhr.responseText;
+  } catch (e) {
+    return ''; // turn all errors into empty results
+  }
+}
 
 // necessary globals
 var port;
@@ -23,8 +32,12 @@ function instantiate() {
 
   let vfs = fs.vfs;
   // get the compiler dependency bundle
-  fs.loadFilesIntoFileSystem(JSON.parse(get('/assets/compiler/compiler_bundle.json')));
-  importScripts('browser-bundle.umd.js');
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/assets/compiler/built/compiler_bundle.json', false);
+  xhr.send();
+  fs.loadFilesIntoFileSystem(JSON.parse(xhr.responseText));
+  importScripts('built/browser-bundle.umd.js');
 }
 
 function readConfiguration(project, basePath) {
@@ -258,7 +271,6 @@ function check(cwd, ...args) {
 }
 
 function compile(fileBundle) {
-
   console.log(`Starting compilation at: ${performance.now()}`)
 
   // delete everything that's not a dependency - gotta do this or weird things happen

@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "built/",
+    "rootDir": "./"
+  },
+  "files": [
+    "fs.ts",
+    "vfs.ts"
+  ]
+}

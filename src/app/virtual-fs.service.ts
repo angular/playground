@@ -30,17 +30,27 @@ interface FolderFileLevel {
   object: Folder | File;
 }
 
+declare let monaco: any;
+
 @Injectable()
 export class VirtualFsService {
 
   private urlWorker: Worker;
+  private monacoModels;
 
-  constructor() {
+  constructor() { }
+
+  initialize() {
+    if (this.urlWorker) {
+      return;
+    }
 
     this.urlWorker = new Worker("/assets/sharing/url-worker.js");
     this.urlWorker.onmessage = function(message) {
       history.replaceState(undefined, '', message.data);
     }
+
+    this.monacoModels = {};
 
     if (location.hash) {
       this.loadDataFromUrlHash();
@@ -65,11 +75,52 @@ export class VirtualFsService {
     });
   }
 
-  writeFile(filename: string, fileContents: string, dontUpdateUrl?: boolean): void {
+  private getLanguageFromFilename(filename: string) {
+    let split = filename.split(".");
+    let language = "";
+    switch (split[split.length - 1]) {
+      case "ts":
+        language = "typescript";
+        break;
+      case "html":
+        language = "html";
+        break;
+      case "js":
+        language="javascript";
+        break;
+      case "css":
+        language="css";
+        break;
+    }
+    return language;
+  }
+
+  writeFile(filename: string, fileContents: string, dontUpdateUrl?: boolean,
+            dontUpdateModel?: boolean): void {
+
     fs.writeFileSync(filename, fileContents);
 
     if (!dontUpdateUrl)
       this.updateUrlWorker();
+
+    if (dontUpdateModel)
+      return;
+
+    // set the monaco models
+    if (!(this.monacoModels[filename])) {
+      const uri = new monaco.Uri();
+      uri._path = uri._fsPath = filename;
+      const model = monaco.editor.createModel("",
+              this.getLanguageFromFilename(filename), uri);
+
+      this.monacoModels[filename] = model;
+    }
+
+    this.monacoModels[filename].setValue(fileContents);
+  }
+
+  getMonacoModel(filename: string) {
+    return this.monacoModels[filename];
   }
 
   deleteFile(filename: string) {

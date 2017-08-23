@@ -46,8 +46,13 @@ export class MonacoEditorComponent {
     if (typeof value == "object")
       return;
 
-    if (this.currentTab)
-      this.fsService.writeFile(this.currentTab.filename, value);
+    if (this.currentTab) {
+      this.fsService.writeFile(this.currentTab.filename, value, false, true);
+    }
+  }
+
+  monacoInitialized(event) {
+    this.fsService.initialize();
   }
 
   createNewTab(filename: string) {

@@ -21,11 +21,7 @@ export class FileSystem {
    * @member
    * @private
    */
-  private _fileSystem: FsInterface = {};
-
-  get fileSystem(): FsInterface {
-    return this._fileSystem;
-  }
+  fileSystem: FsInterface = {};
 
   /**
    * Check if a file exists
@@ -33,7 +29,7 @@ export class FileSystem {
    */
   fileExists(fileName: string): boolean {
     // console.log(`vfs: fileExists on ${fileName}`)
-    return fileName in this._fileSystem;
+    return fileName in this.fileSystem;
   }
 
   /**
@@ -42,7 +38,7 @@ export class FileSystem {
    */
   getSourceFile(fileName: string): ts.SourceFile {
     // console.log(`vfs: getSourceFile on ${fileName}`)
-    return this._fileSystem[fileName];
+    return this.fileSystem[fileName];
   }
 
   /**
@@ -61,7 +57,7 @@ export class FileSystem {
     if (this.getSourceFile(fileName)) {
       this.getSourceFile(fileName).text = data;
     } else {
-      this._fileSystem[fileName] = ts.createSourceFile(fileName, data, ts.ScriptTarget.ES2015);
+      this.fileSystem[fileName] = ts.createSourceFile(fileName, data, ts.ScriptTarget.ES2015);
     }
   }
 
@@ -69,7 +65,7 @@ export class FileSystem {
    * Gets a list of files stored in the file system
    * @method
    */
-  getFileList(): string[] { return Object.keys(this._fileSystem); }
+  getFileList(): string[] { return Object.keys(this.fileSystem); }
 
   readDirectory(): string[] { return []; }
 
@@ -86,6 +82,6 @@ export class FileSystem {
   }
 
   deleteFile(fileName: string): void {
-    delete this._fileSystem[fileName];
+    delete this.fileSystem[fileName];
   }
 };

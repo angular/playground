@@ -10,9 +10,13 @@
       </ng-template>
     </md-tab>
   </md-tab-group>
-  <app-monaco-raw [value]="(currentTab) ? fsService.readFile(currentTab.filename): ''"
+  <!-- <app-monaco-raw [value]="(currentTab) ? fsService.readFile(currentTab.filename): ''"
                   [language]="(currentTab) ? currentTab.editorConfig.language: ''"
                   (change)="changeEvent($event)"
                   [fileErrorMessages]="fileErrorMessages">
+  </app-monaco-raw> -->
+  <app-monaco-raw [model]="(currentTab) ? fsService.getMonacoModel(currentTab.filename): undefined"
+                  (monacoInitialized)="monacoInitialized($event)"
+                  (change)="changeEvent($event)" >
   </app-monaco-raw>
 </div>
