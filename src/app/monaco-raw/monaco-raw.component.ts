@@ -74,7 +74,7 @@ export class MonacoRawComponent implements OnInit {
       ]
     });
 
-    this.http.get("/assets/compiler/compiler_bundle.json")
+    this.http.get("/assets/compiler/built/compiler_bundle.json")
       // .toPromise()
       .subscribe(response => {
         let fileSystem = response.json().fileSystem;

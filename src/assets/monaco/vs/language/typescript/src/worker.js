@@ -1,4 +1,4 @@
-importScripts("/assets/compiler/typescript.js");
+importScripts("/assets/compiler/built/typescript.js");
 
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
