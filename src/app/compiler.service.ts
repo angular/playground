@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-enum WorkerMessageType {
+export enum WorkerMessageType {
   COMPILATION_START,
   COMPILATION_END,
-  COMPILATION_ERROR
+  COMPILATION_ERROR,
+  INSTANTIATION_COMPLETE
 }
 
 interface WorkerMessage {
