@@ -24,7 +24,7 @@ export class UpdateIframeDirective implements OnChanges {
       container.removeChild(container.lastChild);
     }
     const iframe = document.createElement("iframe");
-    iframe.src = "/assets/iframe.html";
+    iframe.src = "/dist/index.html";
     iframe.style.cssText = "width: 100%";
     container.appendChild(iframe);
   }

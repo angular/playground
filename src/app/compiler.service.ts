@@ -84,11 +84,16 @@ export class CompilerService {
     return new Promise((resolve, reject) => {
       this.dispatchCompilation(filesToCompile)
           .then((compiledBundle) => { // compilation was successful
+            let filenames = Object.keys(filesToCompile);
+            for(let filename of filenames) {
+              if (filename.indexOf("/dist/") != 0) {
+                compiledBundle['fileSystem']["/dist" + filename] = filesToCompile[filename];
+              }
+            }
             this.messageServiceWorker(compiledBundle).then((r: any) => {
               if (r.ack) {
                 resolve(compiledBundle);
               }
-              console.log(`Response: `, r);
             });
           })
           .catch((data) => {reject(data)}); // compilation errored

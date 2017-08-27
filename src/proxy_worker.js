@@ -22,7 +22,19 @@ self.addEventListener("fetch", function (event) {
   if (loc != -1) {
     var path = event.request.url.slice(loc);
     if (fileSystem && fileSystem[path]) {
-      event.respondWith(new Response(fileSystem[path].text));
+
+      let init = {
+        status: 200,
+        statusText: "OK"
+      }
+
+      // if .html, set appropriate response type
+      if (path.indexOf(".html") >= 0) {
+        init['headers'] = {'Content-Type': "text/html"};
+      }
+
+      let response = new Response(fileSystem[path].text, init);
+      event.respondWith(response);
       return;
     }
   }
