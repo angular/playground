@@ -1,25 +1,147 @@
 import {WorkerMessageType} from "../../app/compiler.service";
+import * as ts from 'typescript'
+import {componentDefault, mainDefault, templateDefault} from "../../app/virtual-fs.service";
 
-describe("compiler worker", () => {
+const workerPath = "/base/src/assets/compiler/worker/test-wrapper.js";
+
+type doneFunc = () => void;
+
+describe("compiler worker instantiation", () => {
 
   beforeEach(() => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
   })
 
-  describe("instantiation", () => {
-    // it("should instantiate", (done) => {
-    //   let worker = new Worker("/base/src/assets/compiler/compiler-worker.js");
-    //   expect(worker).toBeTruthy();
-    //   done();
-    // });
+  it("should instantiate", (done) => {
+    let worker = new Worker(workerPath);
+    expect(worker).toBeTruthy();
+    worker.terminate();
+    done();
+  });
 
-    it("should send an instantiation message", (done: () => void) => {
-      let worker = new Worker("/base/src/assets/compiler/compiler-worker.js");
-      worker.onmessage = (message) => {
-        console.log(message);
-        expect(message.data.type).toEqual(WorkerMessageType.INSTANTIATION_COMPLETE);
-        done();
-      }
-    })
+  it("should send an instantiation message", (done: doneFunc) => {
+    let worker = new Worker(workerPath);
+    worker.onmessage = (message) => {
+      expect(message.data.type).toEqual(WorkerMessageType.INSTANTIATION_COMPLETE);
+      worker.terminate();
+      done();
+    }
   })
 });
+
+const startExpectedSuccesfulWorker = (done: doneFunc): Worker => {
+  let worker = new Worker(workerPath);
+    // make sure compilation didn't fail
+    worker.onmessage = (message) => {
+      expect(message.data.type).not.toEqual(WorkerMessageType.COMPILATION_ERROR);
+      expect(message.data.type).not.toEqual(WorkerMessageType.COMPILATION_START);
+
+      // only finish the test when we get a message that compilation ended
+      if (message.data.type === WorkerMessageType.COMPILATION_END) {
+        worker.terminate();
+        done();
+      }
+    }
+
+  return worker;
+}
+
+const startExpectedCompilationFailWorker = (done: doneFunc, errorChecker?: (errors: any) => boolean): Worker => {
+  let worker = new Worker(workerPath);
+  // make sure compilation didn't pass
+  worker.onmessage = (message) => {
+    expect(message.data.type).not.toEqual(WorkerMessageType.COMPILATION_END);
+    expect(message.data.type).not.toEqual(WorkerMessageType.COMPILATION_START);
+
+    // only finish the test when we get a message that compilation errored
+    if (message.data.type === WorkerMessageType.COMPILATION_ERROR) {
+      worker.terminate();
+
+      if (errorChecker) {
+        expect(errorChecker(message.data.data)).toBeTruthy();
+      }
+
+      done();
+    }
+  }
+  return worker;
+}
+
+describe("compilation sanity checks", () => {
+  beforeEach(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+  })
+
+  it("should succesfully compile empty file system", (done: doneFunc) => {
+
+    let worker = startExpectedSuccesfulWorker(done);
+
+    worker.postMessage({
+      type: WorkerMessageType.COMPILATION_START,
+      data: {}
+    });
+  });
+
+  it("should succesfully compile a single file", (done: doneFunc) => {
+    let worker = startExpectedSuccesfulWorker(done);
+
+    worker.postMessage({
+      type: WorkerMessageType.COMPILATION_START,
+      data: {
+        "foo.ts": ts.createSourceFile("foo.ts", "console.log(`foo`)",
+          ts.ScriptTarget.ES2015),
+      }
+    })
+  });
+
+  it("should succcessfully compile a minimal angular example", (done: doneFunc) => {
+    let worker = startExpectedSuccesfulWorker(done);
+
+    worker.postMessage({
+      type: WorkerMessageType.COMPILATION_START,
+      data: {
+        "/component.ts": ts.createSourceFile("/component.ts", componentDefault,
+                ts.ScriptTarget.ES2015),
+        "/main.ts": ts.createSourceFile("/main.ts", mainDefault,
+                ts.ScriptTarget.ES2015),
+        "/templates/template.html": ts.createSourceFile("/templates/template.html",
+                templateDefault, ts.ScriptTarget.ES2015),
+      }
+    });
+  });
+
+  it("should fail compilation when no component", (done: doneFunc) => {
+
+    const errorChecker = (errors) => {
+      if (Object.keys(errors).includes("General errors") && errors["General errors"]) {
+        return errors["General errors"][0].message === "Unexpected value 'undefined' declared by the module 'MainModule in /component.ts'"
+      }
+
+      return false;
+    }
+
+    let worker = startExpectedCompilationFailWorker(done);
+
+    worker.postMessage({
+      type: WorkerMessageType.COMPILATION_START,
+      data: {
+        "/component.ts": ts.createSourceFile("/component.ts", `import {BrowserModule} from '@angular/platform-browser';
+import {Component, NgModule, ApplicationRef} from '@angular/core';
+
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [HelloWorldComponent],
+  entryComponents: [HelloWorldComponent],
+  bootstrap: [HelloWorldComponent]
+})
+export class MainModule {
+}`,
+                ts.ScriptTarget.ES2015),
+        "/main.ts": ts.createSourceFile("/main.ts", mainDefault,
+                ts.ScriptTarget.ES2015),
+        "/templates/template.html": ts.createSourceFile("/templates/template.html",
+                templateDefault, ts.ScriptTarget.ES2015),
+      }
+    });
+  })
+})

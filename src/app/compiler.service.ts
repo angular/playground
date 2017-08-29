@@ -23,7 +23,8 @@ export class CompilerService {
   compilerWorker: Worker;
 
   constructor(private http: HttpClient) {
-    this.compilerWorker = new Worker('/assets/compiler/compiler-worker.js');
+    // this.compilerWorker = new Worker('/assets/compiler/compiler-worker.js');
+    this.compilerWorker = new Worker('/assets/compiler/worker/browser-wrapper.js');
     this.compilerWorker.onmessage = this.handleWorkerMessage.bind(this);
 
     if ('serviceWorker' in navigator) {
