@@ -3,6 +3,8 @@ import {inflateRaw} from 'pako';
 
 import * as fs from '../assets/fs/fs';
 
+import {CompilerService} from './compiler.service';
+
 class Folder {
   folderName: string;
   fullPath: string;
@@ -37,8 +39,9 @@ export class VirtualFsService {
 
   private urlWorker: Worker;
   private monacoModels: {[filename: string]: any};
+  private compileTimeout: any;
 
-  constructor() {}
+  constructor(private compilerService: CompilerService) {}
 
   initialize() {
     if (this.urlWorker) {
@@ -103,6 +106,10 @@ export class VirtualFsService {
       this.updateUrlWorker();
     }
 
+    clearTimeout(this.compileTimeout);
+    this.compileTimeout = setTimeout(
+        () => { this.compilerService.compile(this.getFsBundle()); }, 500);
+
     if (dontUpdateModel) {
       return;
     }
@@ -150,7 +157,6 @@ export class VirtualFsService {
     return new_bundle;
   }
 
-  // getHierarchicalFs(): Folder {
   getHierarchicalFs() {
 
     const hierarchy = new Folder('/', '/');

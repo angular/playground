@@ -17,25 +17,22 @@ export class AppComponent {
 
   @ViewChild('consoleDrawer') consoleDrawer: any;
 
-  generatedBundle: FsInterface; // TODO: ADD A TYPE
+  generatedBundle: FsInterface;
 
   constructor(public fsService: VirtualFsService,
               private compilerService: CompilerService,
               private errorHandler: ErrorHandlerService,
-              public snackBar: MdSnackBar) {}
-
-  compileButtonHandler(event: Event) {
-    this.snackBar.open('Compiling...', 'Dismiss');
-    this.compilerService.compile(this.fsService.getFsBundle())
-        .then((compiled_bundle: FsInterface) => {
-          this.generatedBundle = compiled_bundle;
+              private snackBar: MdSnackBar) {
+    this.compilerService.compileSuccessSubject.subscribe(
+        (compiledBundle: FsInterface) => {
+          this.generatedBundle = compiledBundle;
           this.snackBar.open('Compilation Successful!', 'Dismiss');
           this.errorHandler.setErrors({});
-        })
-        .catch((error) => {
-          // display the error - replace with injection into an error box
-          this.snackBar.open('Compilation Failed!', 'Dismiss');
-          this.errorHandler.setErrors(JSON.parse(error));
         });
+
+    this.compilerService.compileFailedSubject.subscribe((error: string) => {
+      this.snackBar.open('Compilation Failed!', 'Dismiss');
+      this.errorHandler.setErrors(JSON.parse(error));
+    });
   }
 }

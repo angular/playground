@@ -104,7 +104,7 @@ describe('compilation sanity checks', () => {
                 ts.ScriptTarget.ES2015),
         '/main.ts': ts.createSourceFile('/main.ts', mainDefault,
                 ts.ScriptTarget.ES2015),
-        '/templates/template.html': ts.createSourceFile('/templates/template.html',
+        '/component.ng.html': ts.createSourceFile('/component.ng.html',
                 templateDefault, ts.ScriptTarget.ES2015),
       }
     });
@@ -140,7 +140,7 @@ export class MainModule {
                 ts.ScriptTarget.ES2015),
         '/main.ts': ts.createSourceFile('/main.ts', mainDefault,
                 ts.ScriptTarget.ES2015),
-        '/templates/template.html': ts.createSourceFile('/templates/template.html',
+        '/component.ng.html': ts.createSourceFile('/component.ng.html',
                 templateDefault, ts.ScriptTarget.ES2015),
       }
     });

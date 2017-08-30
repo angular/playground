@@ -1,5 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {MdSnackBar} from '@angular/material';
+import {Subject} from 'rxjs/Subject';
 
 import {FileSystem, FsInterface} from '../assets/fs/vfs';
 
@@ -20,10 +22,12 @@ export class CompilerService {
   private compilationResolve: (value?: {}|PromiseLike<{}>) => void;
   private compilationReject: (reason?: any) => void;
 
+  public compileSuccessSubject = new Subject();
+  public compileFailedSubject = new Subject();
+
   compilerWorker: Worker;
 
-  constructor(private http: HttpClient) {
-    // this.compilerWorker = new Worker('/assets/compiler/compiler-worker.js');
+  constructor(private http: HttpClient, public snackBar: MdSnackBar) {
     this.compilerWorker =
         new Worker('/assets/compiler/worker/browser-wrapper.js');
     this.compilerWorker.onmessage = this.handleWorkerMessage.bind(this);
@@ -85,23 +89,22 @@ export class CompilerService {
   }
 
   compile(filesToCompile: FsInterface) {
-    return new Promise((resolve, reject) => {
-      this.dispatchCompilation(filesToCompile)
-          .then((compiledBundle: FileSystem) => { // compilation was successful
-            const filenames = Object.keys(filesToCompile);
-            for (const filename of filenames) {
-              if (filename.indexOf('/dist/') !== 0) {
-                compiledBundle['fileSystem']['/dist' + filename] =
-                    filesToCompile[filename];
-              }
+    this.snackBar.open('Compiling...', 'Dismiss');
+    this.dispatchCompilation(filesToCompile)
+        .then((compiledBundle: FileSystem) => {
+          const filenames = Object.keys(filesToCompile);
+          for (const filename of filenames) {
+            if (filename.indexOf('/dist/') !== 0) {
+              compiledBundle['fileSystem']['/dist' + filename] =
+                  filesToCompile[filename];
             }
-            this.messageServiceWorker(compiledBundle).then((r: any) => {
-              if (r.ack) {
-                resolve(compiledBundle);
-              }
-            });
-          })
-          .catch((data) => {reject(data)}); // compilation errored
-    });
+          }
+          this.messageServiceWorker(compiledBundle).then((r: any) => {
+            if (r.ack) {
+              this.compileSuccessSubject.next(compiledBundle);
+            }
+          });
+        })
+        .catch((data) => this.compileFailedSubject.next(data));
   }
 }
