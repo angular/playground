@@ -38,7 +38,7 @@ export class MonacoRawComponent implements OnInit {
   constructor(private http: Http) { }
 
   ngOnInit() {
-    var onGotAmdLoader = () => {
+    const onGotAmdLoader = () => {
       // Load monaco
       (<any>window).require.config({ paths: { 'vs': 'assets/monaco/vs' } });
       (<any>window).require(['vs/editor/editor.main'], () => {
@@ -48,7 +48,7 @@ export class MonacoRawComponent implements OnInit {
 
     // Load AMD loader if necessary
     if (!(<any>window).require) {
-      var loaderScript = document.createElement('script');
+      const loaderScript = document.createElement('script');
       loaderScript.type = 'text/javascript';
       loaderScript.src = 'assets/monaco/vs/loader.js';
       loaderScript.addEventListener('load', onGotAmdLoader);
@@ -60,7 +60,7 @@ export class MonacoRawComponent implements OnInit {
 
   private initMonaco() {
     window['monaco'] = monaco;
-    var myDiv: HTMLDivElement = this.editorContent.nativeElement;
+    const myDiv: HTMLDivElement = this.editorContent.nativeElement;
 
     this._editor = monaco.editor.create(myDiv, {
       model: this._monacoModel,
@@ -74,22 +74,22 @@ export class MonacoRawComponent implements OnInit {
       noImplicitAny: true,
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
       module: monaco.languages.typescript.ModuleKind.CommonJS,
-      typeRoots: ["node_modules/"],
+      typeRoots: ['node_modules/'],
       plugins: [
-        {"name": "@angular/language-service"}
+        {'name': '@angular/language-service'}
       ]
     });
 
-    this.http.get("/assets/compiler/built/compiler_bundle.json")
+    this.http.get('/assets/compiler/built/compiler_bundle.json')
       // .toPromise()
       .subscribe(response => {
-        let fileSystem = response.json().fileSystem;
-        let fileNames = Object.keys(fileSystem);
-        for (let filename of fileNames) {
+        const fileSystem = response.json().fileSystem;
+        const fileNames = Object.keys(fileSystem);
+        for (const filename of fileNames) {
           // we don't want to load in anything that's not a dependency or that
           // is a typescript .d.ts
-          if (filename.indexOf("node_modules/") != 0 ||
-            filename.indexOf("/typescript/") != -1) {
+          if (filename.indexOf('node_modules/') !== 0 ||
+            filename.indexOf('/typescript/') !== -1) {
             continue;
           }
           monaco.languages.typescript.typescriptDefaults.addExtraLib(
@@ -105,10 +105,10 @@ export class MonacoRawComponent implements OnInit {
   }
 
   private setContentChangeEmitter() {
-    console.log("setting content change emitter!");
+    console.log('setting content change emitter!');
     if (this._editor) {
       this._editor.getModel().onDidChangeContent((e: Event) => {
-        let value = this._editor.getModel().getValue();
+        const value = this._editor.getModel().getValue();
         this.change.emit(value);
       })
     }

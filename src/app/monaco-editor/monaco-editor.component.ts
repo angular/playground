@@ -30,7 +30,7 @@ export class MonacoEditorComponent {
     tabControlService.tabCreated$.subscribe(this.createNewTab.bind(this));
     tabControlService.tabClosed$.subscribe(this.handleTabClose.bind(this, null));
     errorHandler.$errorsGenerated.subscribe((errors: {[filename: string]: any}) => {
-      for (let filename of Object.keys(errors)) {
+      for (const filename of Object.keys(errors)) {
         if (this.fsService.fileExists(filename)) {
           this.fileErrorMessages = errors[filename];
           this.tabControlService.createTab(filename);
@@ -43,8 +43,9 @@ export class MonacoEditorComponent {
   changeEvent(value: string) {
     // sometimes an Event gets passed - not sure why
     // TODO: fix this
-    if (typeof value == "object")
+    if (typeof value === 'object') {
       return;
+    }
 
     if (this.currentTab) {
       this.fsService.writeFile(this.currentTab.filename, value, false, true);
@@ -64,20 +65,20 @@ export class MonacoEditorComponent {
       }
     }
 
-    let split = filename.split(".");
-    let language = "";
+    const split = filename.split('.');
+    let language = '';
     switch (split[split.length - 1]) {
-      case "ts":
-        language = "typescript";
+      case 'ts':
+        language = 'typescript';
         break;
-      case "html":
-        language = "html";
+      case 'html':
+        language = 'html';
         break;
-      case "js":
-        language="javascript";
+      case 'js':
+        language = 'javascript';
         break;
-      case "css":
-        language="css";
+      case 'css':
+        language = 'css';
         break;
 
     }
@@ -95,12 +96,12 @@ export class MonacoEditorComponent {
 
   handleTabClose(event: Event, filename: string) {
     for (let i = 0; i < this.tabs.length; i++) {
-      let curFname = this.tabs[i].filename;
-      if (curFname == filename) {
+      const curFname = this.tabs[i].filename;
+      if (curFname === filename) {
 
         this.tabs.splice(i, 1);
 
-        if (this.currentTab && this.currentTab.filename == curFname) {
+        if (this.currentTab && this.currentTab.filename === curFname) {
           this.currentTab = this.tabs[0];
         }
 

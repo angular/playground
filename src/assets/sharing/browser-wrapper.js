@@ -1,3 +1,3 @@
-const assetsRoot = ""
+const assetsRoot = "/"
 
 importScripts("./url-worker.js")

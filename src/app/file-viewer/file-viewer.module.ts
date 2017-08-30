@@ -10,7 +10,7 @@ import { ContextMenuModule } from 'ngx-contextmenu';
 import { SharedModule } from '../shared/shared.module';
 
 import {FileViewerComponent} from './file-viewer.component';
-import {FolderViewComponent, RemoveFileDialog, NewFileDialog} from './folder-view/folder-view.component';
+import {FolderViewComponent, RemoveFileDialogComponent, NewFileDialogComponent} from './folder-view/folder-view.component';
 import { ValuesPipe } from './values.pipe';
 
 import {VirtualFsService} from '../virtual-fs.service';
@@ -31,7 +31,7 @@ import {VirtualFsService} from '../virtual-fs.service';
     FileViewerComponent,
     FolderViewComponent,
     ValuesPipe,
-    RemoveFileDialog, NewFileDialog
+    RemoveFileDialogComponent, NewFileDialogComponent
   ],
   exports: [
     FileViewerComponent
@@ -40,7 +40,7 @@ import {VirtualFsService} from '../virtual-fs.service';
     VirtualFsService
   ],
   entryComponents: [
-    RemoveFileDialog, NewFileDialog
+    RemoveFileDialogComponent, NewFileDialogComponent
   ]
 })
 export class FileViewerModule { }

@@ -70,12 +70,11 @@ export class FileSystem {
   readDirectory(): string[] { return []; }
 
   loadFilesIntoFileSystem(fileSystemData: { [key: string]: {} }): void {
-    let fsData: { [filename: string]: ts.SourceFile } = fileSystemData['fileSystem'];
-    let fnames: string[] = Object.keys(fsData);
+    const fsData: { [filename: string]: ts.SourceFile } = fileSystemData['fileSystem'];
+    const fnames: string[] = Object.keys(fsData);
 
-    for (let index in fnames) {
-      let fileName: string = fnames[index];
-      let newFileName = (fileName.indexOf('node_modules/') == 0) ? '/' + fileName : fileName;
+    for (const fileName of Object.keys(fnames)) {
+      const newFileName = (fileName.indexOf('node_modules/') === 0) ? '/' + fileName : fileName;
 
       this.writeFile(newFileName, fsData[fileName]['text']);
     }

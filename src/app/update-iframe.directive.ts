@@ -25,17 +25,17 @@ export class UpdateIframeDirective implements OnChanges {
     while (container.hasChildNodes()) {
       container.removeChild(container.lastChild);
     }
-    const iframe = document.createElement("iframe");
-    iframe.src = "/dist/index.html";
-    iframe.style.cssText = "width: 100%";
+    const iframe = document.createElement('iframe');
+    iframe.src = '/dist/index.html';
+    iframe.style.cssText = 'width: 100%';
     container.appendChild(iframe);
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    for (let propName in changes) {
-      let chng = changes[propName];
+    for (const propName of Object.keys(changes)) {
+      const chng = changes[propName];
 
-      if (propName === "generatedBundle" && chng.currentValue) {
+      if (propName === 'generatedBundle' && chng.currentValue) {
         this.updateIFrame(chng.currentValue);
       }
     }

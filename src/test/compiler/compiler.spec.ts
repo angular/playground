@@ -1,26 +1,26 @@
-import {WorkerMessageType} from "../../app/compiler.service";
+import {WorkerMessageType} from '../../app/compiler.service';
 import * as ts from 'typescript'
-import {componentDefault, mainDefault, templateDefault} from "../../app/virtual-fs.service";
+import {componentDefault, mainDefault, templateDefault} from '../../app/virtual-fs.service';
 
-const workerPath = "/base/src/assets/compiler/worker/test-wrapper.js";
+const workerPath = '/base/src/assets/compiler/worker/test-wrapper.js';
 
 type doneFunc = () => void;
 
-describe("compiler worker instantiation", () => {
+describe('compiler worker instantiation', () => {
 
   beforeEach(() => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
   })
 
-  it("should instantiate", (done) => {
-    let worker = new Worker(workerPath);
+  it('should instantiate', (done) => {
+    const worker = new Worker(workerPath);
     expect(worker).toBeTruthy();
     worker.terminate();
     done();
   });
 
-  it("should send an instantiation message", (done: doneFunc) => {
-    let worker = new Worker(workerPath);
+  it('should send an instantiation message', (done: doneFunc) => {
+    const worker = new Worker(workerPath);
     worker.onmessage = (message) => {
       expect(message.data.type).toEqual(WorkerMessageType.INSTANTIATION_COMPLETE);
       worker.terminate();
@@ -30,7 +30,7 @@ describe("compiler worker instantiation", () => {
 });
 
 const startExpectedSuccesfulWorker = (done: doneFunc): Worker => {
-  let worker = new Worker(workerPath);
+  const worker = new Worker(workerPath);
     // make sure compilation didn't fail
     worker.onmessage = (message) => {
       expect(message.data.type).not.toEqual(WorkerMessageType.COMPILATION_ERROR);
@@ -47,7 +47,7 @@ const startExpectedSuccesfulWorker = (done: doneFunc): Worker => {
 }
 
 const startExpectedCompilationFailWorker = (done: doneFunc, errorChecker?: (errors: any) => boolean): Worker => {
-  let worker = new Worker(workerPath);
+  const worker = new Worker(workerPath);
   // make sure compilation didn't pass
   worker.onmessage = (message) => {
     expect(message.data.type).not.toEqual(WorkerMessageType.COMPILATION_END);
@@ -67,14 +67,14 @@ const startExpectedCompilationFailWorker = (done: doneFunc, errorChecker?: (erro
   return worker;
 }
 
-describe("compilation sanity checks", () => {
+describe('compilation sanity checks', () => {
   beforeEach(() => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
   })
 
-  it("should succesfully compile empty file system", (done: doneFunc) => {
+  it('should succesfully compile empty file system', (done: doneFunc) => {
 
-    let worker = startExpectedSuccesfulWorker(done);
+    const worker = startExpectedSuccesfulWorker(done);
 
     worker.postMessage({
       type: WorkerMessageType.COMPILATION_START,
@@ -82,50 +82,51 @@ describe("compilation sanity checks", () => {
     });
   });
 
-  it("should succesfully compile a single file", (done: doneFunc) => {
-    let worker = startExpectedSuccesfulWorker(done);
+  it('should succesfully compile a single file', (done: doneFunc) => {
+    const worker = startExpectedSuccesfulWorker(done);
 
     worker.postMessage({
       type: WorkerMessageType.COMPILATION_START,
       data: {
-        "foo.ts": ts.createSourceFile("foo.ts", "console.log(`foo`)",
+        'foo.ts': ts.createSourceFile('foo.ts', 'console.log(`foo`)',
           ts.ScriptTarget.ES2015),
       }
     })
   });
 
-  it("should succcessfully compile a minimal angular example", (done: doneFunc) => {
-    let worker = startExpectedSuccesfulWorker(done);
+  it('should succcessfully compile a minimal angular example', (done: doneFunc) => {
+    const worker = startExpectedSuccesfulWorker(done);
 
     worker.postMessage({
       type: WorkerMessageType.COMPILATION_START,
       data: {
-        "/component.ts": ts.createSourceFile("/component.ts", componentDefault,
+        '/component.ts': ts.createSourceFile('/component.ts', componentDefault,
                 ts.ScriptTarget.ES2015),
-        "/main.ts": ts.createSourceFile("/main.ts", mainDefault,
+        '/main.ts': ts.createSourceFile('/main.ts', mainDefault,
                 ts.ScriptTarget.ES2015),
-        "/templates/template.html": ts.createSourceFile("/templates/template.html",
+        '/templates/template.html': ts.createSourceFile('/templates/template.html',
                 templateDefault, ts.ScriptTarget.ES2015),
       }
     });
   });
 
-  it("should fail compilation when no component", (done: doneFunc) => {
+  it('should fail compilation when no component', (done: doneFunc) => {
 
     const errorChecker = (errors: any) => {
-      if (Object.keys(errors).includes("General errors") && errors["General errors"]) {
-        return errors["General errors"][0].message === "Unexpected value 'undefined' declared by the module 'MainModule in /component.ts'"
+      if (Object.keys(errors).includes('General errors') && errors['General errors']) {
+        return errors['General errors'][0].message ===
+            'Unexpected value \'undefined\' declared by the module \'MainModule in /component.ts\'';
       }
 
       return false;
     }
 
-    let worker = startExpectedCompilationFailWorker(done);
+    const worker = startExpectedCompilationFailWorker(done);
 
     worker.postMessage({
       type: WorkerMessageType.COMPILATION_START,
       data: {
-        "/component.ts": ts.createSourceFile("/component.ts", `import {BrowserModule} from '@angular/platform-browser';
+        '/component.ts': ts.createSourceFile('/component.ts', `import {BrowserModule} from '@angular/platform-browser';
 import {Component, NgModule, ApplicationRef} from '@angular/core';
 
 @NgModule({
@@ -137,9 +138,9 @@ import {Component, NgModule, ApplicationRef} from '@angular/core';
 export class MainModule {
 }`,
                 ts.ScriptTarget.ES2015),
-        "/main.ts": ts.createSourceFile("/main.ts", mainDefault,
+        '/main.ts': ts.createSourceFile('/main.ts', mainDefault,
                 ts.ScriptTarget.ES2015),
-        "/templates/template.html": ts.createSourceFile("/templates/template.html",
+        '/templates/template.html': ts.createSourceFile('/templates/template.html',
                 templateDefault, ts.ScriptTarget.ES2015),
       }
     });

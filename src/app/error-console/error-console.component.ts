@@ -20,27 +20,26 @@ export class ErrorConsoleComponent {
   private setErrors(_errorObject: any) {
     this.errorList = Object.keys(_errorObject).map(filename => {
       return {
-        "fileName": filename,
-        "errors": _errorObject[filename]
+        'fileName': filename,
+        'errors': _errorObject[filename]
       }
     });
   }
 
   constructor(private tabControlService: TabControlService,
               private fsService: VirtualFsService,
-              private errorHandler: ErrorHandlerService)
-  {
+              private errorHandler: ErrorHandlerService) {
     this.errorHandler.$errorsGenerated.subscribe(this.setErrors.bind(this));
   }
 }
 
 @Component({
-  'selector': 'error-display',
+  'selector': 'app-error-display',
   template: `
     <md-card>
       <md-card-title>{{error.fileName}}</md-card-title>
       <md-list dense>
-        <md-list-item *ngFor="let e of error.errors" (click)="errorSelected($event, e)">
+        <md-list-item *ngFor='let e of error.errors' (click)='errorSelected($event, e)'>
           <md-icon>highlight_off</md-icon>{{e.message}} ({{e.lineNumber}}, {{e.characterNumber}})
         </md-list-item>
       </md-list>

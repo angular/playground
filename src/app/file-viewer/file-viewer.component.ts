@@ -11,18 +11,18 @@ export class FileViewerComponent {
 
   @Input() hierarchicalFs: any;
 
-  newFileName: string = "";
+  newFileName = '';
 
   constructor(private fsService: VirtualFsService, private tabControl: TabControlService) { }
 
   addNewFile(event: Event) {
-    if (this.newFileName === "")
+    if (this.newFileName === '') {
       return;
+    }
     if (this.fsService.fileExists(this.newFileName)) {
       this.tabControl.createTab(this.newFileName);
-    }
-    else {
-      this.fsService.writeFile(this.newFileName, "");
+    } else {
+      this.fsService.writeFile(this.newFileName, '');
       this.tabControl.createTab(this.newFileName);
     }
   }

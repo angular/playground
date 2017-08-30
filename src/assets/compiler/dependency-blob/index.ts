@@ -5,43 +5,42 @@ import {FileSystem} from './fileSystem';
 
 // the dependencies we want pulled into the bundle
 const bundleDependencies: string[] = [
-    "@angular",
-    "rxjs",
-    "symbol-observable",
-    "tslib",
-    "zone.js",
-    "typescript"
+    '@angular',
+    'rxjs',
+    'symbol-observable',
+    'tslib',
+    'zone.js',
+    'typescript'
 ];
 
 const filesAllowed: string[] = [
-    ".d.ts",
-    "package.json",
-    ".metadata.json"
+    '.d.ts',
+    'package.json',
+    '.metadata.json'
 ]
 
 const compilerBundle: FileSystem = new FileSystem();
 
 function walkDependencies(level: number, path: string) {
-    let files: string[] = fs.readdirSync(path);
+    const files: string[] = fs.readdirSync(path);
     files.forEach(obj => {
 
-        let filePath: string = `${path}${obj}`;
+        const filePath = `${path}${obj}`;
 
         // check if its a directory or a file
-        let stat = fs.statSync(filePath);
+        const stat = fs.statSync(filePath);
         // if directory, walk through it recursively
         if (stat && stat.isDirectory()) {
             // if we're on the root level, check if we actually want to walk that node module
             // otherwise, just walk it
-            if ((level == 0 && bundleDependencies.indexOf(obj) >= 0) || level > 0) {
-                walkDependencies(level + 1, filePath + "/");
+            if ((level === 0 && bundleDependencies.indexOf(obj) >= 0) || level > 0) {
+                walkDependencies(level + 1, filePath + '/');
             }
-        }
-        // if we're a file and we have a file type we want to load, load the file
-        else {
+        } else {
+            // if we're a file and we have a file type we want to load, load the file
             for (let i = 0; i < filesAllowed.length; i++) {
                 if (filePath.indexOf(filesAllowed[i]) >= 0) {
-                    let fileData: string = fs.readFileSync(filePath, 'utf-8');
+                    const fileData: string = fs.readFileSync(filePath, 'utf-8');
 
                     compilerBundle.writeFile(filePath, fileData);
                 }
@@ -51,6 +50,6 @@ function walkDependencies(level: number, path: string) {
     });
 }
 
-walkDependencies(0, "node_modules/");
+walkDependencies(0, 'node_modules/');
 
-fs.writeFileSync("compiler_bundle.json", JSON.stringify(compilerBundle));
+fs.writeFileSync('compiler_bundle.json', JSON.stringify(compilerBundle));

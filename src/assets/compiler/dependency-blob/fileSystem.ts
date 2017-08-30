@@ -1,6 +1,6 @@
 export class SourceFile {
     fileName: string;
-    text: string = "";
+    text = '';
 
     /**
      * Constructor for a SourceFile
@@ -37,8 +37,7 @@ export class FileSystem {
      * Get a source file from the file system
      * @method
      */
-    getSourceFile(fileName: string): SourceFile
-    {
+    getSourceFile(fileName: string): SourceFile {
         return this.fileSystem[fileName];
     }
 
@@ -55,13 +54,11 @@ export class FileSystem {
      * Writes a file to the filesystem with the given filename and data
      * @method
      */
-    writeFile(fileName: string, data: string): void
-    {
+    writeFile(fileName: string, data: string): void {
         if (this.getSourceFile(fileName)) {
             this.getSourceFile(fileName).text = data;
-        }
-        else {
-            let file: SourceFile = new SourceFile(fileName);
+        } else {
+            const file: SourceFile = new SourceFile(fileName);
             file.text = data;
             this.fileSystem[fileName] = file;
         }

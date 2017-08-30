@@ -14,7 +14,10 @@ export class FolderViewComponent {
 
   @Input() folderList: any;
 
-  display: boolean = true;
+  @ViewChild('folderMenu') public folderMenu: ContextMenuComponent;
+  @ViewChild('fileMenu') public fileMenu: ContextMenuComponent;
+
+  display = true;
 
   constructor(private tabControlService: TabControlService,
     private fsService: VirtualFsService, public dialog: MdDialog,
@@ -24,26 +27,24 @@ export class FolderViewComponent {
   generateListStyle(ow: any) {
     let string = `padding-left: calc(10px * ${ow.level});`;
     if (ow.object.fileName) {
-      string += "cursor: pointer;"
+      string += 'cursor: pointer;'
     }
     return this.sanitizer.bypassSecurityTrustStyle(string);
   }
 
-  @ViewChild('folderMenu') public folderMenu: ContextMenuComponent;
-  @ViewChild('fileMenu') public fileMenu: ContextMenuComponent;
 
   private fileSelected(file: any) {
     this.tabControlService.createTab(file.fileName);
   }
 
   removeFile($event: any) {
-    let fileName = $event.item.object.fileName;
+    const fileName = $event.item.object.fileName;
     if (this.fsService.fileExists(fileName)) {
-      let dialogRef = this.dialog.open(RemoveFileDialog, {
+      const dialogRef = this.dialog.open(RemoveFileDialogComponent, {
         data: fileName,
       });
       dialogRef.afterClosed().subscribe(result => {
-        if (result === "Yes") {
+        if (result === 'Yes') {
           this.tabControlService.closeTab(fileName);
           this.fsService.deleteFile(fileName);
         }
@@ -52,10 +53,10 @@ export class FolderViewComponent {
   }
 
   removeFolder($event: any) {
-    let path = $event.item.object.fullPath;
+    const path = $event.item.object.fullPath;
 
-    for (let filename of this.fsService.getFileList()) {
-      if (filename.indexOf(path) == 0) {
+    for (const filename of this.fsService.getFileList()) {
+      if (filename.indexOf(path) === 0) {
         this.fsService.deleteFile(filename);
       }
     }
@@ -68,19 +69,19 @@ export class FolderViewComponent {
   }
 
   addNewFileInFolder($event: any) {
-    let dialogRef = this.dialog.open(NewFileDialog, {
+    const dialogRef = this.dialog.open(NewFileDialogComponent, {
       data: {
-        "baseName": $event.item.object.fullPath + "/"
+        'baseName': $event.item.object.fullPath + '/'
       }
     });
     dialogRef.afterClosed().subscribe((result: string) => {
-      this.fsService.writeFile(result, "");
+      this.fsService.writeFile(result, '');
     })
   }
 }
 
 @Component({
-  selector: 'remove-file-dialog',
+  selector: 'app-remove-file-dialog',
   template: `
     <h1>Remove File</h1>
     <div md-dialog-content>Are you sure you want to remove {{data}}?</div>
@@ -90,13 +91,13 @@ export class FolderViewComponent {
     </div>
   `
 })
-export class RemoveFileDialog {
-  constructor(public dialogRef: MdDialogRef<RemoveFileDialog>,
+export class RemoveFileDialogComponent {
+  constructor(public dialogRef: MdDialogRef<RemoveFileDialogComponent>,
               @Inject(MD_DIALOG_DATA) public data: any) {}
 }
 
 @Component({
-  selector: 'newfile-dialog',
+  selector: 'app-newfile-dialog',
   template: `
     <md-input-container>
       <input mdInput value="{{data.baseName}}" #fileName>
@@ -107,7 +108,7 @@ export class RemoveFileDialog {
     </button>
   `
 })
-export class NewFileDialog {
-  constructor(public dialogRef: MdDialogRef<NewFileDialog>,
+export class NewFileDialogComponent {
+  constructor(public dialogRef: MdDialogRef<NewFileDialogComponent>,
               @Inject(MD_DIALOG_DATA) public data: any) {}
 }
