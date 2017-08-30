@@ -65,10 +65,8 @@ export class VirtualFsService {
     if (!code) {
       return;
     }
-    // let inflated = inflateRaw(location.hash.split(",")[1]);
     const inflated = inflateRaw(
         atob(code.replace(/\./g, '+').replace(/_/g, '/')), {to : 'string'});
-    // code.replace(/\./g, '+').replace(/_/g, '/'), {to: 'string'});
 
     const loadedFiles = JSON.parse(inflated);
     Object.keys(loadedFiles).forEach(filename => {
@@ -205,7 +203,7 @@ export class VirtualFsService {
   private writeDefaultContent() {
     this.writeFile('/component.ts', componentDefault);
 
-    this.writeFile('/templates/template.html', templateDefault);
+    this.writeFile('/component.ng.html', templateDefault);
 
     this.writeFile('/index.html', `<html>
 <head>
@@ -290,22 +288,12 @@ export const componentDefault =
     `import {BrowserModule} from '@angular/platform-browser';
 import {Component, NgModule, ApplicationRef} from '@angular/core';
 
-export class Hero { id: number; name: string }
-
-const HEROES: Hero[] = [
- {id: 11, name: 'Batman'},
- {id: 12, name: 'Wonder Woman'},
- {id: 12, name: 'Iron Man'},
-]
-
 @Component({
   selector: 'hello-world-app',
-  templateUrl: "./templates/template.html",
+  templateUrl: "./component.ng.html",
 })
 export class HelloWorldComponent {
-  heroes = HEROES;
-  selectedHero: Hero;
-  onSelect(hero: Hero): void { this.selectedHero = hero; }
+  name: string = "Angular";
 }
 
 @NgModule({
@@ -324,9 +312,4 @@ import { MainModuleNgFactory } from './component.ngfactory';
 console.log('Running AOT compiled');
 platformBrowser().bootstrapModuleFactory(MainModuleNgFactory);`
 
-export const templateDefault = `<ul class="heroes">
-  <li *ngFor="let hero of heroes" (click)="onSelect(hero)">{{hero.name}}</li>
-</ul>
-<div *ngIf="selectedHero">
-  <div><label>name: </label> {{selectedHero.name}}</div>
-</div>`
+export const templateDefault = `<h1>Hello {{name}}!<h1>`;
