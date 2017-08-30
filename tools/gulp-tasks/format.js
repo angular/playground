@@ -1,10 +1,11 @@
 const srcsToFmt = [
-  'src/**/*.{js,ts}',
-  'assets/compiler/**/*.{js.ts}',
+  'src/app/**/*.{js,ts}',
+  'assets/compiler/dependency-blob/**/*.{js.ts}',
+  'assets/compiler/worker/**/*.{js.ts}',
   'assets/fs/**/*.{js.ts}',
   'assets/sharing/**/*.{js.ts}',
   'test/**/*.{js.ts}',
-]
+];
 
 module.exports = {
   // Check source code for formatting errors (clang-format)

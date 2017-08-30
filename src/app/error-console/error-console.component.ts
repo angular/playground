@@ -1,7 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { TabControlService } from '../shared/tab-control.service';
-import { ErrorHandlerService } from '../shared/error-handler.service';
-import { VirtualFsService } from '../virtual-fs.service';
+import {Component, Input, OnInit} from '@angular/core';
+
+import {ErrorHandlerService} from '../shared/error-handler.service';
+import {TabControlService} from '../shared/tab-control.service';
+import {VirtualFsService} from '../virtual-fs.service';
 
 interface ConsoleErrorMessage {
   fileName: string;
@@ -9,9 +10,9 @@ interface ConsoleErrorMessage {
 }
 
 @Component({
-  selector: 'app-error-console',
-  templateUrl: './error-console.component.html',
-  styleUrls: ['./error-console.component.css']
+  selector : 'app-error-console',
+  templateUrl : './error-console.component.html',
+  styleUrls : [ './error-console.component.css' ]
 })
 export class ErrorConsoleComponent {
 
@@ -19,10 +20,7 @@ export class ErrorConsoleComponent {
 
   private setErrors(_errorObject: any) {
     this.errorList = Object.keys(_errorObject).map(filename => {
-      return {
-        'fileName': filename,
-        'errors': _errorObject[filename]
-      }
+      return { 'fileName': filename, 'errors': _errorObject[filename] }
     });
   }
 
@@ -34,8 +32,8 @@ export class ErrorConsoleComponent {
 }
 
 @Component({
-  'selector': 'app-error-display',
-  template: `
+  'selector' : 'app-error-display',
+  template : `
     <md-card>
       <md-card-title>{{error.fileName}}</md-card-title>
       <md-list dense>

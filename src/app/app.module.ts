@@ -1,56 +1,47 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
-import { HttpModule } from '@angular/http';
-
-import { AppComponent } from './app.component';
-
+import {HttpClientModule} from '@angular/common/http';
+import {NgModule} from '@angular/core';
+import {HttpModule} from '@angular/http';
 import {
-  MdToolbarModule, MdSidenavModule, MdButtonModule,
-  MdGridListModule, MdTabsModule, MdIconModule,
-  MdSnackBarModule, MdListModule, MdCardModule
+  MdButtonModule,
+  MdCardModule,
+  MdGridListModule,
+  MdIconModule,
+  MdListModule,
+  MdSidenavModule,
+  MdSnackBarModule,
+  MdTabsModule,
+  MdToolbarModule
 } from '@angular/material';
+import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { MonacoEditorComponent } from './monaco-editor/monaco-editor.component';
-
-import { VirtualFsService } from './virtual-fs.service';
-import { CompilerService } from './compiler.service';
-import { MonacoRawComponent } from './monaco-raw/monaco-raw.component';
-import { FileViewerModule } from './file-viewer/file-viewer.module';
-import { SharedModule } from './shared/shared.module';
-import { UpdateIframeDirective } from './update-iframe.directive';
-import { ErrorConsoleComponent, ErrorDisplayComponent } from './error-console/error-console.component';
+import {AppComponent} from './app.component';
+import {CompilerService} from './compiler.service';
+import {
+  ErrorConsoleComponent,
+  ErrorDisplayComponent
+} from './error-console/error-console.component';
+import {FileViewerModule} from './file-viewer/file-viewer.module';
+import {MonacoEditorComponent} from './monaco-editor/monaco-editor.component';
+import {MonacoRawComponent} from './monaco-raw/monaco-raw.component';
+import {SharedModule} from './shared/shared.module';
+import {UpdateIframeDirective} from './update-iframe.directive';
+import {VirtualFsService} from './virtual-fs.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    MonacoEditorComponent,
-    MonacoRawComponent,
-    UpdateIframeDirective,
-    ErrorConsoleComponent,
-    ErrorDisplayComponent
+  declarations : [
+    AppComponent, MonacoEditorComponent, MonacoRawComponent,
+    UpdateIframeDirective, ErrorConsoleComponent, ErrorDisplayComponent
   ],
-  imports: [
-    BrowserModule,
-    MdToolbarModule,
-    MdButtonModule,
-    MdTabsModule,
-    MdSnackBarModule,
-    BrowserAnimationsModule,
-    FileViewerModule,
-    SharedModule,
-    MdIconModule,
-    HttpClientModule,
-    HttpModule,
-    MdListModule,
-    MdCardModule
+  imports : [
+    BrowserModule, MdToolbarModule, MdButtonModule, MdTabsModule,
+    MdSnackBarModule, BrowserAnimationsModule, FileViewerModule, SharedModule,
+    MdIconModule, HttpClientModule, HttpModule, MdListModule, MdCardModule
   ],
-  providers: [
+  providers : [
     VirtualFsService,
     CompilerService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap : [ AppComponent ]
 })
-export class AppModule { }
+export class AppModule {}

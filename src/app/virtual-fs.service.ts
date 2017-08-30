@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { inflateRaw } from 'pako';
+import {Injectable} from '@angular/core';
+import {inflateRaw} from 'pako';
 
 import * as fs from '../assets/fs/fs';
 
@@ -27,7 +27,7 @@ class File {
 
 interface FolderFileLevel {
   level: number;
-  object: Folder | File;
+  object: Folder|File;
 }
 
 declare let monaco: any;
@@ -38,7 +38,7 @@ export class VirtualFsService {
   private urlWorker: Worker;
   private monacoModels: {[filename: string]: any};
 
-  constructor() { }
+  constructor() {}
 
   initialize() {
     if (this.urlWorker) {
@@ -46,11 +46,10 @@ export class VirtualFsService {
     }
 
     this.urlWorker = new Worker('/assets/sharing/browser-wrapper.js');
-    this.urlWorker.onmessage = function(message) {
-      history.replaceState(undefined, '', message.data);
-    }
+    this.urlWorker.onmessage =
+        function(message) { history.replaceState(undefined, '', message.data); }
 
-    this.monacoModels = {};
+        this.monacoModels = {};
 
     if (location.hash) {
       this.loadDataFromUrlHash();
@@ -68,8 +67,8 @@ export class VirtualFsService {
     }
     // let inflated = inflateRaw(location.hash.split(",")[1]);
     const inflated = inflateRaw(
-          atob(code.replace(/\./g, '+').replace(/_/g, '/')), {to: 'string'});
-          // code.replace(/\./g, '+').replace(/_/g, '/'), {to: 'string'});
+        atob(code.replace(/\./g, '+').replace(/_/g, '/')), {to : 'string'});
+    // code.replace(/\./g, '+').replace(/_/g, '/'), {to: 'string'});
 
     const loadedFiles = JSON.parse(inflated);
     Object.keys(loadedFiles).forEach(filename => {
@@ -81,18 +80,18 @@ export class VirtualFsService {
     const split = filename.split('.');
     let language = '';
     switch (split[split.length - 1]) {
-      case 'ts':
-        language = 'typescript';
-        break;
-      case 'html':
-        language = 'html';
-        break;
-      case 'js':
-        language = 'javascript';
-        break;
-      case 'css':
-        language = 'css';
-        break;
+    case 'ts':
+      language = 'typescript';
+      break;
+    case 'html':
+      language = 'html';
+      break;
+    case 'js':
+      language = 'javascript';
+      break;
+    case 'css':
+      language = 'css';
+      break;
     }
     return language;
   }
@@ -114,8 +113,8 @@ export class VirtualFsService {
     if (!(this.monacoModels[filename])) {
       const uri = new monaco.Uri();
       uri._path = uri._fsPath = filename;
-      const model = monaco.editor.createModel('',
-              this.getLanguageFromFilename(filename), uri);
+      const model = monaco.editor.createModel(
+          '', this.getLanguageFromFilename(filename), uri);
 
       this.monacoModels[filename] = model;
     }
@@ -123,26 +122,18 @@ export class VirtualFsService {
     this.monacoModels[filename].setValue(fileContents);
   }
 
-  getMonacoModel(filename: string) {
-    return this.monacoModels[filename];
-  }
+  getMonacoModel(filename: string) { return this.monacoModels[filename]; }
 
   deleteFile(filename: string) {
     fs.deleteFile(filename);
     this.updateUrlWorker();
   }
 
-  readFile(filename: string): string {
-    return fs.readFileSync(filename);
-  }
+  readFile(filename: string): string { return fs.readFileSync(filename); }
 
-  fileExists(filename: string): boolean {
-    return fs.fileExists(filename);
-  }
+  fileExists(filename: string): boolean { return fs.fileExists(filename); }
 
-  getFsBundle() {
-    return fs.vfs.fileSystem;
-  }
+  getFsBundle() { return fs.vfs.fileSystem; }
 
   updateUrlWorker() {
     this.urlWorker.postMessage(JSON.stringify(this.getUserFileTextBundle()));
@@ -151,9 +142,10 @@ export class VirtualFsService {
   // returns the text of all the files that aren't in /node_modules/
   getUserFileTextBundle() {
     const bundle = fs.vfs.fileSystem;
-    const new_bundle: {[filename: string]: string}  = {};
+    const new_bundle: {[filename: string]: string} = {};
     Object.keys(fs.vfs.fileSystem).forEach(key => {
-      if (key.indexOf('/node_modules/') === -1 && key.indexOf('/dist/') === -1) {
+      if (key.indexOf('/node_modules/') === -1 &&
+          key.indexOf('/dist/') === -1) {
         new_bundle[key] = bundle[key].text;
       }
     });
@@ -172,12 +164,14 @@ export class VirtualFsService {
       let currentFolder: Folder = hierarchy;
       for (let i = 0; i < path.length; i++) {
         if (i === path.length - 1) {
-          currentFolder.subFiles.push(new File(filename, this.readFile(filename)));
+          currentFolder.subFiles.push(
+              new File(filename, this.readFile(filename)));
         } else {
           const folderName = path[i];
           if (!currentFolder.subFolders[folderName]) {
             const fullPath = '/' + path.slice(0, i + 1).join('/');
-            currentFolder.subFolders[folderName] = new Folder(folderName, fullPath);
+            currentFolder.subFolders[folderName] =
+                new Folder(folderName, fullPath);
           }
           currentFolder = currentFolder.subFolders[folderName];
         }
@@ -186,34 +180,27 @@ export class VirtualFsService {
 
     const flattened: FolderFileLevel[] = [];
 
-    const flatten = (folder: Folder, level: number) => {
-      if (folder.fullPath.indexOf('/dist') === 0) {
-        return;
-      }
-      flattened.push({
-        level: level,
-        object: folder
-      });
-      level++;
-      for (const subfile of folder['subFiles']) {
-        flattened.push({
-          level: level,
-          object: subfile
-        });
-      }
-      for (const subfoldername of Object.keys(folder['subFolders'])) {
-        flatten(folder['subFolders'][subfoldername], level);
-      }
-    }
+    const flatten =
+        (folder: Folder, level: number) => {
+          if (folder.fullPath.indexOf('/dist') === 0) {
+            return;
+          }
+          flattened.push({level : level, object : folder});
+          level++;
+          for (const subfile of folder['subFiles']) {
+            flattened.push({level : level, object : subfile});
+          }
+          for (const subfoldername of Object.keys(folder['subFolders'])) {
+            flatten(folder['subFolders'][subfoldername], level);
+          }
+        }
 
     flatten(hierarchy, 0);
 
     return flattened;
   }
 
-  getFileList() {
-    return fs.vfs.getFileList();
-  }
+  getFileList() { return fs.vfs.getFileList(); }
 
   private writeDefaultContent() {
     this.writeFile('/component.ts', componentDefault);
@@ -297,10 +284,10 @@ export class VirtualFsService {
 
     this.writeFile('/main.ts', mainDefault);
   }
-
 }
 
-export const componentDefault = `import {BrowserModule} from '@angular/platform-browser';
+export const componentDefault =
+    `import {BrowserModule} from '@angular/platform-browser';
 import {Component, NgModule, ApplicationRef} from '@angular/core';
 
 export class Hero { id: number; name: string }
@@ -330,7 +317,8 @@ export class HelloWorldComponent {
 export class MainModule {
 }`
 
-export const mainDefault = `import { platformBrowser } from '@angular/platform-browser';
+export const mainDefault =
+    `import { platformBrowser } from '@angular/platform-browser';
 import { MainModuleNgFactory } from './component.ngfactory';
 
 console.log('Running AOT compiled');

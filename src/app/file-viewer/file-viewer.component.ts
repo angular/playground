@@ -1,11 +1,12 @@
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+
+import {TabControlService} from '../shared/tab-control.service';
 import {VirtualFsService} from '../virtual-fs.service';
-import { TabControlService } from '../shared/tab-control.service';
 
 @Component({
-  selector: 'app-file-viewer',
-  templateUrl: './file-viewer.component.html',
-  styleUrls: ['./file-viewer.component.css']
+  selector : 'app-file-viewer',
+  templateUrl : './file-viewer.component.html',
+  styleUrls : [ './file-viewer.component.css' ]
 })
 export class FileViewerComponent {
 
@@ -13,7 +14,8 @@ export class FileViewerComponent {
 
   newFileName = '';
 
-  constructor(private fsService: VirtualFsService, private tabControl: TabControlService) { }
+  constructor(private fsService: VirtualFsService,
+              private tabControl: TabControlService) {}
 
   addNewFile(event: Event) {
     if (this.newFileName === '') {
@@ -26,5 +28,4 @@ export class FileViewerComponent {
       this.tabControl.createTab(this.newFileName);
     }
   }
-
 }

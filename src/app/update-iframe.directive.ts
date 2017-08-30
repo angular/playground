@@ -1,24 +1,30 @@
-import { Directive, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { VirtualFsService } from './virtual-fs.service';
-import { Http } from '@angular/http';
+import {
+  Directive,
+  ElementRef,
+  Input,
+  OnChanges,
+  SimpleChanges
+} from '@angular/core';
+import {Http} from '@angular/http';
 
 import {FileSystem} from '../assets/fs/vfs';
 
-@Directive({
-  selector: '[appUpdateIframe]'
-})
+import {VirtualFsService} from './virtual-fs.service';
+
+@Directive({selector : '[appUpdateIframe]'})
 export class UpdateIframeDirective implements OnChanges {
 
   @Input('appUpdateIframe') generatedBundle: FileSystem;
 
   constructor(private iframeContainer: ElementRef,
-    private fsService: VirtualFsService, private http: Http) { }
+              private fsService: VirtualFsService, private http: Http) {}
 
   private updateIFrame(generatedBundle: FileSystem) {
     const files: string[] = Object.keys(generatedBundle.fileSystem);
 
     // for (let filename of files) {
-    //   this.fsService.writeFile(filename, generatedBundle.fileSystem[filename].text);
+    //   this.fsService.writeFile(filename,
+    //   generatedBundle.fileSystem[filename].text);
     // }
 
     const container = this.iframeContainer.nativeElement;
@@ -40,5 +46,4 @@ export class UpdateIframeDirective implements OnChanges {
       }
     }
   }
-
 }

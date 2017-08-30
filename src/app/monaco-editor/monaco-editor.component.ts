@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { VirtualFsService } from '../virtual-fs.service';
-import { TabControlService } from '../shared/tab-control.service';
-import { ErrorHandlerService } from '../shared/error-handler.service';
+import {Component, EventEmitter, Output} from '@angular/core';
+
+import {ErrorHandlerService} from '../shared/error-handler.service';
+import {TabControlService} from '../shared/tab-control.service';
+import {VirtualFsService} from '../virtual-fs.service';
 
 interface EditorConfigurations {
   language: string;
@@ -13,31 +14,35 @@ interface TabState {
 }
 
 @Component({
-  selector: 'app-monaco-editor',
-  templateUrl: './monaco-editor.component.html',
-  styleUrls: ['./monaco-editor.component.css']
+  selector : 'app-monaco-editor',
+  templateUrl : './monaco-editor.component.html',
+  styleUrls : [ './monaco-editor.component.css' ]
 })
 export class MonacoEditorComponent {
 
   @Output() fileChange: EventEmitter<object> = new EventEmitter();
 
-  currentTab: TabState | null = null;
+  currentTab: TabState|null = null;
   currentTabIndex: number;
   fileErrorMessages: any[] = [];
   tabs: TabState[] = [];
 
-  constructor(public fsService: VirtualFsService, private tabControlService: TabControlService, private errorHandler: ErrorHandlerService) {
+  constructor(public fsService: VirtualFsService,
+              private tabControlService: TabControlService,
+              private errorHandler: ErrorHandlerService) {
     tabControlService.tabCreated$.subscribe(this.createNewTab.bind(this));
-    tabControlService.tabClosed$.subscribe(this.handleTabClose.bind(this, null));
-    errorHandler.$errorsGenerated.subscribe((errors: {[filename: string]: any}) => {
-      for (const filename of Object.keys(errors)) {
-        if (this.fsService.fileExists(filename)) {
-          this.fileErrorMessages = errors[filename];
-          this.tabControlService.createTab(filename);
-          return;
-        }
-      }
-    });
+    tabControlService.tabClosed$.subscribe(
+        this.handleTabClose.bind(this, null));
+    errorHandler.$errorsGenerated.subscribe(
+        (errors: {[filename: string]: any}) => {
+          for (const filename of Object.keys(errors)) {
+            if (this.fsService.fileExists(filename)) {
+              this.fileErrorMessages = errors[filename];
+              this.tabControlService.createTab(filename);
+              return;
+            }
+          }
+        });
   }
 
   changeEvent(value: string) {
@@ -52,9 +57,7 @@ export class MonacoEditorComponent {
     }
   }
 
-  monacoInitialized(event: Event) {
-    this.fsService.initialize();
-  }
+  monacoInitialized(event: Event) { this.fsService.initialize(); }
 
   createNewTab(filename: string) {
     for (let i = 0; i < this.tabs.length; i++) {
@@ -68,31 +71,25 @@ export class MonacoEditorComponent {
     const split = filename.split('.');
     let language = '';
     switch (split[split.length - 1]) {
-      case 'ts':
-        language = 'typescript';
-        break;
-      case 'html':
-        language = 'html';
-        break;
-      case 'js':
-        language = 'javascript';
-        break;
-      case 'css':
-        language = 'css';
-        break;
-
+    case 'ts':
+      language = 'typescript';
+      break;
+    case 'html':
+      language = 'html';
+      break;
+    case 'js':
+      language = 'javascript';
+      break;
+    case 'css':
+      language = 'css';
+      break;
     }
-    this.tabs.push({
-      editorConfig: {language: language},
-      filename: filename
-    });
+    this.tabs.push({editorConfig : {language : language}, filename : filename});
     this.currentTab = this.tabs[this.tabs.length - 1];
     this.currentTabIndex = this.tabs.length - 1;
   }
 
-  handleTabChange(event: any) {
-    this.currentTab = this.tabs[event.index];
-  }
+  handleTabChange(event: any) { this.currentTab = this.tabs[event.index]; }
 
   handleTabClose(event: Event, filename: string) {
     for (let i = 0; i < this.tabs.length; i++) {

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
+import {Injectable} from '@angular/core';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class TabControlService {
@@ -15,11 +15,7 @@ export class TabControlService {
   fileErrorsSet$ = this.fileErrorsSource.asObservable();
 
   // Message commands
-  createTab(filename: string) {
-    this.tabCreatedSource.next(filename);
-  }
+  createTab(filename: string) { this.tabCreatedSource.next(filename); }
 
-  closeTab(filename: string) {
-    this.tabClosedSource.next(filename);
-  }
+  closeTab(filename: string) { this.tabClosedSource.next(filename); }
 }
