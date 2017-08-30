@@ -39,6 +39,8 @@
     "@types/pako": "^1.0.0",
     "chai": "^4.1.1",
     "codelyzer": "~3.0.1",
+    "gulp": "^3.9.1",
+    "gulp-clang-format": "^1.0.23",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",
