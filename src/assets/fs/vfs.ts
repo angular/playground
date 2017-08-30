@@ -71,9 +71,8 @@ export class FileSystem {
 
   loadFilesIntoFileSystem(fileSystemData: { [key: string]: {} }): void {
     const fsData: { [filename: string]: ts.SourceFile } = fileSystemData['fileSystem'];
-    const fnames: string[] = Object.keys(fsData);
 
-    for (const fileName of Object.keys(fnames)) {
+    for (const fileName of Object.keys(fsData)) {
       const newFileName = (fileName.indexOf('node_modules/') === 0) ? '/' + fileName : fileName;
 
       this.writeFile(newFileName, fsData[fileName]['text']);

@@ -44,7 +44,9 @@ export class CompilerService {
         } else {
           resolve(event.data);
         }
-      } if (!navigator.serviceWorker.controller) {
+      };
+
+      if (!navigator.serviceWorker.controller) {
         return;
       }
       navigator.serviceWorker.controller.postMessage(message,
