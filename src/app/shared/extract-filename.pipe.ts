@@ -6,7 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class ExtractFilenamePipe implements PipeTransform {
 
   transform(rawFilename: any, args?: any): any {
-    let splitFilename = rawFilename.split("/").filter((part) => part !== "");
+    let splitFilename = rawFilename.split("/").filter((part: string) => part !== "");
     return splitFilename[splitFilename.length - 1];
   }
 

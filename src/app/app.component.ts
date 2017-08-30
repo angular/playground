@@ -4,6 +4,8 @@ import { CompilerService } from './compiler.service';
 import { ErrorHandlerService } from './shared/error-handler.service';
 import { MdSnackBar } from '@angular/material';
 
+import {FsInterface, FileSystem} from "../assets/fs/vfs";
+
 
 @Component({
   selector: 'app-root',
@@ -13,19 +15,19 @@ import { MdSnackBar } from '@angular/material';
 export class AppComponent {
   title = 'edit.ng';
 
-  @ViewChild('consoleDrawer') consoleDrawer;
+  @ViewChild('consoleDrawer') consoleDrawer: any;
 
-  generatedBundle;
+  generatedBundle: FsInterface; // TODO: ADD A TYPE
 
   constructor(public fsService: VirtualFsService,
               private compilerService: CompilerService,
               private errorHandler: ErrorHandlerService,
               public snackBar: MdSnackBar) { }
 
-  compileButtonHandler(event) {
+  compileButtonHandler(event: Event) {
     this.snackBar.open("Compiling...", "Dismiss");
     this.compilerService.compile(this.fsService.getFsBundle())
-      .then((compiled_bundle) => {
+      .then((compiled_bundle: FsInterface) => {
         this.generatedBundle = compiled_bundle;
         this.snackBar.open("Compilation Successful!", "Dismiss");
         this.errorHandler.setErrors({});

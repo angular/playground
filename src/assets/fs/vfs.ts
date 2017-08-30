@@ -6,7 +6,7 @@
 
 import * as ts from 'typescript';
 
-interface FsInterface {
+export interface FsInterface {
   [fileName: string]: ts.SourceFile;
 }
 

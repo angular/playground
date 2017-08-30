@@ -4,11 +4,11 @@ import * as virtual_file_system from './vfs';
 
 export let vfs = new virtual_file_system.FileSystem();
 
-export function writeFileSync(filename, data) {
+export function writeFileSync(filename: string, data: string) {
   vfs.writeFile(filename, data);
 }
 
-export function statSync(directoryName) { return true; }
+export function statSync(directoryName: string) { return true; }
 
 export function loadFilesIntoFileSystem(fileSystemData: { [key: string]: {} }): void {
   vfs.loadFilesIntoFileSystem(fileSystemData);

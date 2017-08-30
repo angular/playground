@@ -6,6 +6,12 @@ import { Headers, Http } from '@angular/http';
 
 declare const monaco: any;
 
+declare const window: {
+  [monaco: string]: any;
+  prototype: Window;
+  new(): Window;
+}
+
 @Component({
   selector: 'app-monaco-raw',
   templateUrl: './monaco-raw.component.html',
@@ -101,7 +107,7 @@ export class MonacoRawComponent implements OnInit {
   private setContentChangeEmitter() {
     console.log("setting content change emitter!");
     if (this._editor) {
-      this._editor.getModel().onDidChangeContent((e) => {
+      this._editor.getModel().onDidChangeContent((e: Event) => {
         let value = this._editor.getModel().getValue();
         this.change.emit(value);
       })

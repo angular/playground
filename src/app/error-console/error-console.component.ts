@@ -17,7 +17,7 @@ export class ErrorConsoleComponent {
 
   errorList: ConsoleErrorMessage[];
 
-  private setErrors(_errorObject) {
+  private setErrors(_errorObject: any) {
     this.errorList = Object.keys(_errorObject).map(filename => {
       return {
         "fileName": filename,
@@ -55,7 +55,7 @@ export class ErrorDisplayComponent {
               private fsService: VirtualFsService,
               private errorHandler: ErrorHandlerService) {}
 
-  errorSelected(event, specificError) {
+  errorSelected(event: Event, specificError: any) {
     console.log(event, this.error, specificError);
 
     if (this.fsService.fileExists(specificError.fileName)) {

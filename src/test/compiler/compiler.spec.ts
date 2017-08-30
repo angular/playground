@@ -112,7 +112,7 @@ describe("compilation sanity checks", () => {
 
   it("should fail compilation when no component", (done: doneFunc) => {
 
-    const errorChecker = (errors) => {
+    const errorChecker = (errors: any) => {
       if (Object.keys(errors).includes("General errors") && errors["General errors"]) {
         return errors["General errors"][0].message === "Unexpected value 'undefined' declared by the module 'MainModule in /component.ts'"
       }

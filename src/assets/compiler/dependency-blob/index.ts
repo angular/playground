@@ -22,7 +22,8 @@ const filesAllowed: string[] = [
 const compilerBundle: FileSystem = new FileSystem();
 
 function walkDependencies(level: number, path: string) {
-    fs.readdirSync(path).forEach(obj => {
+    let files: string[] = fs.readdirSync(path);
+    files.forEach(obj => {
 
         let filePath: string = `${path}${obj}`;
 

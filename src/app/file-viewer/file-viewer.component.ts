@@ -9,13 +9,13 @@ import { TabControlService } from '../shared/tab-control.service';
 })
 export class FileViewerComponent {
 
-  @Input() hierarchicalFs;
+  @Input() hierarchicalFs: any;
 
   newFileName: string = "";
 
   constructor(private fsService: VirtualFsService, private tabControl: TabControlService) { }
 
-  addNewFile(event) {
+  addNewFile(event: Event) {
     if (this.newFileName === "")
       return;
     if (this.fsService.fileExists(this.newFileName)) {

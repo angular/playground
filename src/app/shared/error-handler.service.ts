@@ -16,7 +16,7 @@ export class ErrorHandlerService {
     this.errorSource.next(errors);
   }
 
-  public targetSpecificError(specificError) {
+  public targetSpecificError(specificError: any) {
     this.specificErrorSource.next(specificError);
   }
 

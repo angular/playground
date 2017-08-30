@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { FsInterface, FileSystem } from '../assets/fs/vfs';
 
 export enum WorkerMessageType {
   COMPILATION_START,
@@ -35,7 +36,7 @@ export class CompilerService {
     }
   }
 
-  private messageServiceWorker(message) {
+  private messageServiceWorker(message: any) {
     return new Promise(function(resolve, reject) {
       var messageChannel = new MessageChannel();
       messageChannel.port1.onmessage = function(event) {
@@ -46,11 +47,11 @@ export class CompilerService {
           resolve(event.data);
         }
       }
-      navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
+      navigator.serviceWorker.controller!.postMessage(message, [messageChannel.port2]);
     });
   }
 
-  private handleWorkerMessage(message) {
+  private handleWorkerMessage(message: any) {
     switch (message.data.type) {
       case WorkerMessageType.COMPILATION_START:
         console.error("Main thread received COMPILATION_START message - this shouldn't happen.");
@@ -69,7 +70,7 @@ export class CompilerService {
     }
   }
 
-  private dispatchCompilation(filesToCompile) {
+  private dispatchCompilation(filesToCompile: FsInterface) {
     return new Promise((resolve, reject) => {
       this.compilerWorker.postMessage({
         type: WorkerMessageType.COMPILATION_START,
@@ -81,10 +82,10 @@ export class CompilerService {
     });
   }
 
-  compile(filesToCompile) {
+  compile(filesToCompile: FsInterface) {
     return new Promise((resolve, reject) => {
       this.dispatchCompilation(filesToCompile)
-          .then((compiledBundle) => { // compilation was successful
+          .then((compiledBundle: FileSystem) => { // compilation was successful
             let filenames = Object.keys(filesToCompile);
             for(let filename of filenames) {
               if (filename.indexOf("/dist/") != 0) {

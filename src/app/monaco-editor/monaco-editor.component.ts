@@ -21,7 +21,7 @@ export class MonacoEditorComponent {
 
   @Output() fileChange: EventEmitter<object> = new EventEmitter();
 
-  currentTab: TabState = null;
+  currentTab: TabState | null = null;
   currentTabIndex: number;
   fileErrorMessages: any[] = [];
   tabs: TabState[] = [];
@@ -29,7 +29,7 @@ export class MonacoEditorComponent {
   constructor(public fsService: VirtualFsService, private tabControlService: TabControlService, private errorHandler: ErrorHandlerService) {
     tabControlService.tabCreated$.subscribe(this.createNewTab.bind(this));
     tabControlService.tabClosed$.subscribe(this.handleTabClose.bind(this, null));
-    errorHandler.$errorsGenerated.subscribe((errors: {}) => {
+    errorHandler.$errorsGenerated.subscribe((errors: {[filename: string]: any}) => {
       for (let filename of Object.keys(errors)) {
         if (this.fsService.fileExists(filename)) {
           this.fileErrorMessages = errors[filename];
@@ -51,7 +51,7 @@ export class MonacoEditorComponent {
     }
   }
 
-  monacoInitialized(event) {
+  monacoInitialized(event: Event) {
     this.fsService.initialize();
   }
 
@@ -89,18 +89,18 @@ export class MonacoEditorComponent {
     this.currentTabIndex = this.tabs.length - 1;
   }
 
-  handleTabChange(event) {
+  handleTabChange(event: any) {
     this.currentTab = this.tabs[event.index];
   }
 
-  handleTabClose(event, filename) {
+  handleTabClose(event: Event, filename: string) {
     for (let i = 0; i < this.tabs.length; i++) {
       let curFname = this.tabs[i].filename;
       if (curFname == filename) {
 
         this.tabs.splice(i, 1);
 
-        if (this.currentTab.filename == curFname) {
+        if (this.currentTab && this.currentTab.filename == curFname) {
           this.currentTab = this.tabs[0];
         }
 

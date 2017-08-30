@@ -6,10 +6,10 @@ import * as fs from '../assets/fs/fs';
 class Folder {
   folderName: string;
   fullPath: string;
-  subFolders: {} = {};
+  subFolders: {[folderName: string]: Folder} = {};
   subFiles: File[] = [];
 
-  constructor(_folderName, _fullPath) {
+  constructor(_folderName: string, _fullPath: string) {
     this.folderName = _folderName;
     this.fullPath = _fullPath;
   }
@@ -19,7 +19,7 @@ class File {
   fileName: string;
   contents: string;
 
-  constructor(_fileName, _contents) {
+  constructor(_fileName: string, _contents: string) {
     this.fileName = _fileName;
     this.contents = _contents;
   }
@@ -36,7 +36,7 @@ declare let monaco: any;
 export class VirtualFsService {
 
   private urlWorker: Worker;
-  private monacoModels;
+  private monacoModels: {[filename: string]: any};
 
   constructor() { }
 
@@ -147,7 +147,7 @@ export class VirtualFsService {
   // returns the text of all the files that aren't in /node_modules/
   getUserFileTextBundle() {
     let bundle = fs.vfs.fileSystem;
-    let new_bundle = {};
+    let new_bundle: {[filename: string]: string}  = {};
     Object.keys(fs.vfs.fileSystem).forEach(key => {
       if (key.indexOf("/node_modules/") == -1 && key.indexOf("/dist/") == -1) {
         new_bundle[key] = bundle[key].text;

@@ -9,6 +9,10 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    // strict null checks true, no implicit any true, no fall through true
     "typeRoots": [
       "node_modules/@types"
     ],

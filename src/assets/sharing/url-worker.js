@@ -1,5 +1,5 @@
 // import require.js loader
-importScripts("/assets/monaco/vs/loader.js");
+importScripts(assetsRoot + "assets/monaco/vs/loader.js");
 
 let pako = null;
 

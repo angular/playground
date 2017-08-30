@@ -12,7 +12,7 @@ import { VirtualFsService } from '../../virtual-fs.service';
 })
 export class FolderViewComponent {
 
-  @Input() folderList;
+  @Input() folderList: any;
 
   display: boolean = true;
 
@@ -21,7 +21,7 @@ export class FolderViewComponent {
     private sanitizer: DomSanitizer) {
   }
 
-  generateListStyle(ow) {
+  generateListStyle(ow: any) {
     let string = `padding-left: calc(10px * ${ow.level});`;
     if (ow.object.fileName) {
       string += "cursor: pointer;"
@@ -32,11 +32,11 @@ export class FolderViewComponent {
   @ViewChild('folderMenu') public folderMenu: ContextMenuComponent;
   @ViewChild('fileMenu') public fileMenu: ContextMenuComponent;
 
-  private fileSelected(file) {
+  private fileSelected(file: any) {
     this.tabControlService.createTab(file.fileName);
   }
 
-  removeFile($event) {
+  removeFile($event: any) {
     let fileName = $event.item.object.fileName;
     if (this.fsService.fileExists(fileName)) {
       let dialogRef = this.dialog.open(RemoveFileDialog, {
@@ -51,7 +51,7 @@ export class FolderViewComponent {
     }
   }
 
-  removeFolder($event) {
+  removeFolder($event: any) {
     let path = $event.item.object.fullPath;
 
     for (let filename of this.fsService.getFileList()) {
@@ -61,13 +61,13 @@ export class FolderViewComponent {
     }
   }
 
-  objectClickEvent(event, object) {
+  objectClickEvent(event: Event, object: any) {
     if (object.fileName) {
       this.fileSelected(object);
     }
   }
 
-  addNewFileInFolder($event) {
+  addNewFileInFolder($event: any) {
     let dialogRef = this.dialog.open(NewFileDialog, {
       data: {
         "baseName": $event.item.object.fullPath + "/"
