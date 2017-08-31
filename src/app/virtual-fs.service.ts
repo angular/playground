@@ -5,6 +5,8 @@ import * as fs from '../assets/fs/fs';
 
 import {CompilerService} from './compiler.service';
 
+import {angularVersionsConfig} from "../environments/angularVersions";
+
 class Folder {
   folderName: string;
   fullPath: string;
@@ -231,7 +233,10 @@ export class VirtualFsService {
   <script src="https://unpkg.com/reflect-metadata@0.1.3/Reflect.js"></script>
   <script src="https://unpkg.com/systemjs@0.19.31/dist/system.js"></script>
   <script type="text/javascript">
-    var angularVersion = '';
+    var angularVersion = '${angularVersionsConfig['@angular']}';
+    // var materialVersion = '${angularVersionsConfig['material']}';
+    // var angularVersion = '';
+    var materialVersion = '';
 
     System.config({
       paths: {
@@ -251,22 +256,22 @@ export class VirtualFsService {
         '@angular/router': 'npm:@angular/router' + angularVersion
               + '/bundles/router.umd.js',
         '@angular/forms': 'npm:@angular/forms' + angularVersion + '/bundles/forms.umd.js',
-        '@angular/material': 'npm:@angular/material' + angularVersion + '/bundles/material.umd.js',
+        '@angular/material': 'npm:@angular/material' + materialVersion + '/bundles/material.umd.js',
 
-        '@angular/cdk': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk.umd.js',
-        '@angular/cdk/a11y': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-a11y.umd.js',
-        '@angular/cdk/bidi': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-bidi.umd.js',
-        '@angular/cdk/coercion': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-coercion.umd.js',
-        '@angular/cdk/collections': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-collections.umd.js',
-        '@angular/cdk/keycodes': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-keycodes.umd.js',
-        '@angular/cdk/observers': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-observers.umd.js',
-        '@angular/cdk/overlay': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-overlay.umd.js',
-        '@angular/cdk/platform': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-platform.umd.js',
-        '@angular/cdk/portal': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-portal.umd.js',
-        '@angular/cdk/rxjs': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-rxjs.umd.js',
-        '@angular/cdk/scrolling': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-scrolling.umd.js',
-        '@angular/cdk/table': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-table.umd.js',
-        '@angular/cdk/testing': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-testing.umd.js',
+        '@angular/cdk': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk.umd.js',
+        '@angular/cdk/a11y': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-a11y.umd.js',
+        '@angular/cdk/bidi': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-bidi.umd.js',
+        '@angular/cdk/coercion': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-coercion.umd.js',
+        '@angular/cdk/collections': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-collections.umd.js',
+        '@angular/cdk/keycodes': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-keycodes.umd.js',
+        '@angular/cdk/observers': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-observers.umd.js',
+        '@angular/cdk/overlay': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-overlay.umd.js',
+        '@angular/cdk/platform': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-platform.umd.js',
+        '@angular/cdk/portal': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-portal.umd.js',
+        '@angular/cdk/rxjs': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-rxjs.umd.js',
+        '@angular/cdk/scrolling': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-scrolling.umd.js',
+        '@angular/cdk/table': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-table.umd.js',
+        '@angular/cdk/testing': 'npm:@angular/cdk' + materialVersion + '/bundles/cdk-testing.umd.js',
 
         '@angular/animations': 'npm:@angular/animations'
               + angularVersion + '/bundles/animations.umd.js',

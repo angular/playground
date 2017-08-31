@@ -24,6 +24,10 @@ cp src/assets/compiler/misc/browser-bundle.umd.js src/assets/compiler/built/
 echo "SUCCESS!"
 
 echo "===BUILDING THE COMPILER DEPENDENCY BLOB==="
+
+./node_modules/typescript/bin/tsc -p tools/build/
+node tools/build/built/tools/build/rewriteDependencyBlobPackage.js
+
 cd src/assets/compiler/dependency-blob
 npm install
 ./node_modules/typescript/bin/tsc index.ts

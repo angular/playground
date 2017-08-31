@@ -9,6 +9,7 @@
 # dependencies
 /node_modules
 /src/assets/compiler/dependency-blob/node_modules/
+/src/assets/compiler/dependency-blob/package-lock.json
 
 # IDEs and editors
 /.idea
