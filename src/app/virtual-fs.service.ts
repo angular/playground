@@ -211,12 +211,20 @@ export class VirtualFsService {
 
     this.writeFile('/component.ng.html', templateDefault);
 
+    this.writeFile('/styles.css', '');
+
     this.writeFile('/index.html', `<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <link rel="stylesheet" href="/assets/dist/styles.css" />
+  <!-- uncomment one of these to use @angular/material pre-built themes -->
+  <!-- <link rel="stylesheet" href="https://unpkg.com/@angular/material@2.0.0-beta.10/prebuilt-themes/deeppurple-amber.css" /> -->
+  <!-- <link rel="stylesheet" href="https://unpkg.com/@angular/material@2.0.0-beta.10/prebuilt-themes/indigo-pink.css" /> -->
+  <!-- <link rel="stylesheet" href="https://unpkg.com/@angular/material@2.0.0-beta.10/prebuilt-themes/pink-bluegrey.css" /> -->
+  <!-- <link rel="stylesheet" href="https://unpkg.com/@angular/material@2.0.0-beta.10/prebuilt-themes/purple-green.css" /> -->
   <script src="https://unpkg.com/core-js@2.4.1/client/shim.min.js"></script>
   <script src="https://unpkg.com/zone.js/dist/zone.js"></script>
   <script src="https://unpkg.com/zone.js/dist/long-stack-trace-zone.js"></script>
@@ -243,6 +251,23 @@ export class VirtualFsService {
         '@angular/router': 'npm:@angular/router' + angularVersion
               + '/bundles/router.umd.js',
         '@angular/forms': 'npm:@angular/forms' + angularVersion + '/bundles/forms.umd.js',
+        '@angular/material': 'npm:@angular/material' + angularVersion + '/bundles/material.umd.js',
+
+        '@angular/cdk': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk.umd.js',
+        '@angular/cdk/a11y': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-a11y.umd.js',
+        '@angular/cdk/bidi': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-bidi.umd.js',
+        '@angular/cdk/coercion': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-coercion.umd.js',
+        '@angular/cdk/collections': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-collections.umd.js',
+        '@angular/cdk/keycodes': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-keycodes.umd.js',
+        '@angular/cdk/observers': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-observers.umd.js',
+        '@angular/cdk/overlay': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-overlay.umd.js',
+        '@angular/cdk/platform': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-platform.umd.js',
+        '@angular/cdk/portal': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-portal.umd.js',
+        '@angular/cdk/rxjs': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-rxjs.umd.js',
+        '@angular/cdk/scrolling': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-scrolling.umd.js',
+        '@angular/cdk/table': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-table.umd.js',
+        '@angular/cdk/testing': 'npm:@angular/cdk' + angularVersion + '/bundles/cdk-testing.umd.js',
+
         '@angular/animations': 'npm:@angular/animations'
               + angularVersion + '/bundles/animations.umd.js',
         '@angular/platform-browser/animations': 'npm:@angular/platform-browser'
