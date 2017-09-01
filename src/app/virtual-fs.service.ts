@@ -2,10 +2,9 @@ import {Injectable} from '@angular/core';
 import {inflateRaw} from 'pako';
 
 import * as fs from '../assets/fs/fs';
+import {angularVersionsConfig} from '../environments/angularVersions';
 
 import {CompilerService} from './compiler.service';
-
-import {angularVersionsConfig} from "../environments/angularVersions";
 
 class Folder {
   folderName: string;

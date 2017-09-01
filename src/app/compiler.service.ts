@@ -105,6 +105,6 @@ export class CompilerService {
             }
           });
         })
-        .catch((data) => this.compileFailedSubject.next(data));
+        .catch((diagnostics) => this.compileFailedSubject.next(diagnostics));
   }
 }

@@ -1,6 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {ErrorHandlerService} from '../shared/error-handler.service';
+import {
+  ErrorHandlerService,
+  ParsedDiagnostic
+} from '../shared/error-handler.service';
 import {TabControlService} from '../shared/tab-control.service';
 import {VirtualFsService} from '../virtual-fs.service';
 
@@ -18,9 +21,19 @@ export class ErrorConsoleComponent {
 
   errorList: ConsoleErrorMessage[];
 
-  private setErrors(_errorObject: any) {
-    this.errorList = Object.keys(_errorObject).map(filename => {
-      return { 'fileName': filename, 'errors': _errorObject[filename] }
+  private setErrors(diagnostics: ParsedDiagnostic[]) {
+    const errorsByFilename: {[filename: string]: ParsedDiagnostic[]} = {};
+    const errorListByFilename: ConsoleErrorMessage[] = [];
+
+    for (const diagnostic of diagnostics) {
+      if (!errorsByFilename[diagnostic.filename]) {
+        errorsByFilename[diagnostic.filename] = [];
+      }
+      errorsByFilename[diagnostic.filename].push(diagnostic);
+    }
+
+    this.errorList = Object.keys(errorsByFilename).map(filename => {
+      return { fileName: filename, errors: errorsByFilename[filename] }
     });
   }
 
@@ -38,7 +51,7 @@ export class ErrorConsoleComponent {
       <md-card-title>{{error.fileName}}</md-card-title>
       <md-list dense>
         <md-list-item *ngFor='let e of error.errors' (click)='errorSelected($event, e)'>
-          <md-icon>highlight_off</md-icon>{{e.message}} ({{e.lineNumber}}, {{e.characterNumber}})
+          <md-icon>highlight_off</md-icon>{{e.message}} ({{e.line}}, {{e.character}})
         </md-list-item>
       </md-list>
     </md-card>

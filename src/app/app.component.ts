@@ -27,12 +27,13 @@ export class AppComponent {
         (compiledBundle: FsInterface) => {
           this.generatedBundle = compiledBundle;
           this.snackBar.open('Compilation Successful!', 'Dismiss');
-          this.errorHandler.setErrors({});
+          this.errorHandler.receiveDiagnostics([]);
         });
 
-    this.compilerService.compileFailedSubject.subscribe((error: string) => {
-      this.snackBar.open('Compilation Failed!', 'Dismiss');
-      this.errorHandler.setErrors(JSON.parse(error));
-    });
+    this.compilerService.compileFailedSubject.subscribe(
+        (diagnostics: any[]) => {
+          this.snackBar.open('Compilation Failed!', 'Dismiss');
+          this.errorHandler.receiveDiagnostics(diagnostics);
+        });
   }
 }
