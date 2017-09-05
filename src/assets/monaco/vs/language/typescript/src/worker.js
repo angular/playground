@@ -70,7 +70,7 @@ define(["require", "exports", "./language-service", "../lib/typescriptServices",
             // 	});
             // });
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://localhost:8081/compiler_bundle.json", false);
+            xhr.open("GET", "/assets/compiler/built/compiler_bundle.json", false);
             xhr.send(null);
             var data = JSON.parse(xhr.responseText);
             var files = Object.keys(data.fileSystem);
@@ -82,7 +82,7 @@ define(["require", "exports", "./language-service", "../lib/typescriptServices",
                     filename.indexOf("/typescript/") != -1) {
                     continue;
                 }
-                this._extraLibs[filename] = data.fileSystem[filename].text;
+                this._extraLibs["/" + filename] = data.fileSystem[filename].text;
             }
             // console.log(this._extraLibs);
             // console.log(this._languageService);

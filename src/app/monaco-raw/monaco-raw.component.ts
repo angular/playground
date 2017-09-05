@@ -92,8 +92,9 @@ export class MonacoRawComponent implements OnInit {
                 filename.indexOf('/typescript/') !== -1) {
               continue;
             }
+            console.log(`Loading extra lib ${filename}`);
             monaco.languages.typescript.typescriptDefaults.addExtraLib(
-                fileSystem[filename].text, filename);
+                fileSystem[filename].text, "/" + filename);
           }
         });
 

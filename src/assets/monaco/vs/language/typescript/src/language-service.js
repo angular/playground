@@ -4,7 +4,7 @@
  * License: MIT
  */
 
-// var $reflect = {defineMetadata: function() {}, getOwnMetadata: function(){}};
+// _global['Reflect'] = {defineMetadata: function() {}, getOwnMetadata: function(){}};
 // ((typeof global !== 'undefined' && global)||{})['Reflect'] = $reflect;
 // var $deferred, $resolved, $provided;
 // function $getModule(name) { return $provided[name] || require(name); }
@@ -2441,7 +2441,7 @@ function stringify(token) {
  * @suppress {checkTypes} checked by tsc
  */
 var _nextClassId = 0;
-var Reflect$1 = _global['Reflect'];
+var Reflect$1 = {defineMetadata: function() {}, getOwnMetadata: function(){}}; //_global['Reflect'];
 /**
  * An interface implemented by all Angular type decorators, which allows them to be used as ES7
  * decorators as well as
