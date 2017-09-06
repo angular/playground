@@ -5,6 +5,7 @@ import * as fs from '../assets/fs/fs';
 import {angularVersionsConfig} from '../environments/angularVersions';
 
 import {CompilerService} from './compiler.service';
+import {TabControlService} from './shared/tab-control.service';
 
 class Folder {
   folderName: string;
@@ -42,7 +43,7 @@ export class VirtualFsService {
   private monacoModels: {[filename: string]: any};
   private compileTimeout: any;
 
-  constructor(private compilerService: CompilerService) {}
+  constructor(private compilerService: CompilerService, private tabControl: TabControlService) {}
 
   initialize() {
     if (this.urlWorker) {
@@ -316,6 +317,8 @@ export class VirtualFsService {
 </html>`);
 
     this.writeFile('/main.ts', mainDefault);
+
+    this.tabControl.createTab("/component.ts");
   }
 }
 
