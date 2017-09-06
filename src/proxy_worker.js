@@ -40,12 +40,13 @@ self.addEventListener("fetch", function (event) {
   }
 
   // if we're an unpkg dependency, cache it
-  if (event.request.url.indexOf("https://unpkg.com") == 0) {
+  if (event.request.url.indexOf("https://unpkg.com") == 0 || event.request.url.indexOf("compiler_bundle.json") >= 0) {
     event.respondWith(
       caches.match(event.request).then(function (resp) {
         // console.log(`got a match of: `, resp);
         return resp || fetch(event.request).then(function (response) {
           return caches.open('v1').then(function (cache) {
+            console.log(`cached ${event.request.url}`);
             cache.put(event.request, response.clone());
             return response;
           });
