@@ -115,6 +115,9 @@ function readConfiguration(project, basePath, files) {
   return { parsed, ngOptions };
 }
 
+// cache old program used in compilation
+let oldProgram = undefined;
+
 function compile(fileBundle) {
   // delete everything that's not a dependency - gotta do this or weird things happen
   let files = fs.vfs.getFileList();
@@ -142,8 +145,11 @@ function compile(fileBundle) {
   const compileResult = ngc.performCompilation({
     rootNames: files,
     options: config.ngOptions,
-    host: host
+    host: host,
+    oldProgram: oldProgram
   });
+
+  oldProgram = compileResult.program || oldProgram;
 
   // compilation was successful!
   if (compileResult.emitResult) {
