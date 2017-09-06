@@ -66,7 +66,7 @@ export class CompilerService {
       break;
 
     case WorkerMessageType.COMPILATION_END:
-      console.log('Main thread received COMPILATION_END message!');
+      // console.log('Main thread received COMPILATION_END message!');
       const compiled_fs = message.data.data;
       this.compilationResolve(compiled_fs);
       break;

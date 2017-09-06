@@ -66,8 +66,6 @@ export class ErrorDisplayComponent {
               private errorHandler: ErrorHandlerService) {}
 
   errorSelected(event: Event, specificError: any) {
-    console.log(event, this.error, specificError);
-
     if (this.fsService.fileExists(specificError.fileName)) {
       this.errorHandler.targetSpecificError(specificError);
     }

@@ -43,7 +43,8 @@ export class VirtualFsService {
   private monacoModels: {[filename: string]: any};
   private compileTimeout: any;
 
-  constructor(private compilerService: CompilerService, private tabControl: TabControlService) {}
+  constructor(private compilerService: CompilerService,
+              private tabControl: TabControlService) {}
 
   initialize() {
     if (this.urlWorker) {
@@ -318,7 +319,7 @@ export class VirtualFsService {
 
     this.writeFile('/main.ts', mainDefault);
 
-    this.tabControl.createTab("/component.ts");
+    this.tabControl.createTab('/component.ts');
   }
 }
 

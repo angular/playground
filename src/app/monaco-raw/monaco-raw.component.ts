@@ -103,7 +103,6 @@ export class MonacoRawComponent implements OnInit {
   }
 
   private setContentChangeEmitter() {
-    console.log('setting content change emitter!');
     if (this._editor) {
       this._editor.getModel().onDidChangeContent((e: Event) => {
         const value = this._editor.getModel().getValue();

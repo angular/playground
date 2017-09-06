@@ -1,7 +1,7 @@
 var fileSystem;
 
 self.addEventListener('install', function (event) {
-  console.log("Install event: ", event);
+  // console.log("Install event: ", event);
   event.waitUntil(Promise.all([
     self.skipWaiting(),
     caches.open('v1').then(function (cache) {
@@ -46,7 +46,7 @@ self.addEventListener("fetch", function (event) {
         // console.log(`got a match of: `, resp);
         return resp || fetch(event.request).then(function (response) {
           return caches.open('v1').then(function (cache) {
-            console.log(`cached ${event.request.url}`);
+            // console.log(`cached ${event.request.url}`);
             cache.put(event.request, response.clone());
             return response;
           });
