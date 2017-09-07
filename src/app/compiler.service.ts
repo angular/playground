@@ -40,6 +40,7 @@ export class CompilerService {
   }
 
   private messageServiceWorker(message: any) {
+    console.log("messaging service worker!");
     return new Promise(function(resolve, reject) {
       const messageChannel = new MessageChannel();
       messageChannel.port1.onmessage = function(event) {
@@ -51,6 +52,8 @@ export class CompilerService {
       };
 
       if (!navigator.serviceWorker.controller) {
+        alert("Service worker not yet registered. Please refresh the page.");
+        console.log("service worker not available!");
         return;
       }
       navigator.serviceWorker.controller.postMessage(message,
@@ -66,7 +69,7 @@ export class CompilerService {
       break;
 
     case WorkerMessageType.COMPILATION_END:
-      // console.log('Main thread received COMPILATION_END message!');
+      console.log('Main thread received COMPILATION_END message!');
       const compiled_fs = message.data.data;
       this.compilationResolve(compiled_fs);
       break;
@@ -92,6 +95,7 @@ export class CompilerService {
     this.snackBar.open('Compiling...', 'Dismiss');
     this.dispatchCompilation(filesToCompile)
         .then((compiledBundle: FileSystem) => {
+          console.log("compilation resolve!");
           const filenames = Object.keys(filesToCompile);
           for (const filename of filenames) {
             if (filename.indexOf('/dist/') !== 0) {
@@ -100,6 +104,7 @@ export class CompilerService {
             }
           }
           this.messageServiceWorker(compiledBundle).then((r: any) => {
+            console.log("received message from service worker!");
             if (r.ack) {
               this.compileSuccessSubject.next(compiledBundle);
             }

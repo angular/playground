@@ -36,9 +36,10 @@ define(["require", "exports", "./language-service", "../lib/typescriptServices",
             this._extraLibs = {};
             this._ctx = ctx;
             this._compilerOptions = createData.compilerOptions;
+            console.log('createData: ', createData)
             // console.log("Compiler options: ", this._compilerOptions);
             // this._extraLibs = createData.extraLibs;
-            this._extraLibs = {};
+            this._extraLibs = createData.extraLibs;
             this._languageService = ts.createLanguageService(this);
             // console.log(this._languageService);
             // console.log(ts);
@@ -69,22 +70,22 @@ define(["require", "exports", "./language-service", "../lib/typescriptServices",
             // 		}
             // 	});
             // });
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "/assets/compiler/built/compiler_bundle.json", false);
-            xhr.send(null);
-            var data = JSON.parse(xhr.responseText);
-            var files = Object.keys(data.fileSystem);
-            var i;
-            for (i = 0; i < files.length; i++) {
-                // console.log("file " + i + " of " + files.length);
-                var filename = files[i];
-                if (filename.indexOf("node_modules/") != 0 ||
-                    filename.indexOf("/typescript/") != -1) {
-                    continue;
-                }
-                this._extraLibs["/" + filename] = data.fileSystem[filename].text;
-            }
-            // console.log(this._extraLibs);
+            // var xhr = new XMLHttpRequest();
+            // xhr.open("GET", "/assets/compiler/built/compiler_bundle.json", false);
+            // xhr.send(null);
+            // var data = JSON.parse(xhr.responseText);
+            // var files = Object.keys(data.fileSystem);
+            // var i;
+            // for (i = 0; i < files.length; i++) {
+            //     // console.log("file " + i + " of " + files.length);
+            //     var filename = files[i];
+            //     if (filename.indexOf("node_modules/") != 0 ||
+            //         filename.indexOf("/typescript/") != -1) {
+            //         continue;
+            //     }
+            //     this._extraLibs["/" + filename] = data.fileSystem[filename].text;
+            // }
+            console.log(this._extraLibs);
             // console.log(this._languageService);
             var params = {
                 project: {
@@ -223,6 +224,7 @@ define(["require", "exports", "./language-service", "../lib/typescriptServices",
             return Promise.as(this._languageService.getOccurrencesAtPosition(fileName, position));
         };
         TypeScriptWorker.prototype.getDefinitionAtPosition = function (fileName, position) {
+            console.log('Typescript worker - getDefinitionAtPosition!');
             return Promise.as(this._languageService.getDefinitionAtPosition(fileName, position));
         };
         TypeScriptWorker.prototype.getReferencesAtPosition = function (fileName, position) {

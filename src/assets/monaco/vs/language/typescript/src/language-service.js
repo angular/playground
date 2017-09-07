@@ -53891,6 +53891,7 @@ function create(info /* ts.server.PluginCreateInfo */) {
         return base;
     };
     proxy.getDefinitionAtPosition = function (fileName, position) {
+        console.log("language-service.js getDefinitionAtPosition!");
         var base = oldLS.getDefinitionAtPosition(fileName, position);
         if (base && base.length) {
             return base;

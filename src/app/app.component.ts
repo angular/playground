@@ -25,6 +25,7 @@ export class AppComponent {
               private snackBar: MdSnackBar) {
     this.compilerService.compileSuccessSubject.subscribe(
         (compiledBundle: FsInterface) => {
+          console.log("Compilation successful!");
           this.generatedBundle = compiledBundle;
           this.snackBar.open('Compilation Successful!', 'Dismiss');
           this.errorHandler.receiveDiagnostics([]);
