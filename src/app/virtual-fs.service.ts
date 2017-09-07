@@ -280,6 +280,8 @@ export class VirtualFsService {
               + angularVersion + '/bundles/platform-browser-animations.umd.js',
         '@angular/animations/browser': 'npm:@angular/animations' + angularVersion + '/bundles/animations-browser.umd.js',
 
+        '@angular/upgrade/static': 'npm:@angular/upgrade' + angularVersion + '/bundles/upgrade-static.umd.js',
+
         '@angular/core/testing': 'npm:@angular/core'
               + angularVersion + '/bundles/core-testing.umd.js',
         '@angular/common/testing': 'npm:@angular/common' + angularVersion + '/bundles/common-testing.umd.js',
