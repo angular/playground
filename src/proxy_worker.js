@@ -1,17 +1,11 @@
 var fileSystem;
 
 self.addEventListener('install', function (event) {
-  // console.log("Install event: ", event);
-  event.waitUntil(Promise.all([
-    self.skipWaiting(),
-    caches.open('v1').then(function (cache) {
-      return cache.addAll([]);
-    })
-  ]));
 });
 
 self.addEventListener('activate', function (event) {
-  event.waitUntil(self.clients.claim());
+  console.log("Activate event: ", event);
+  event.waitUntil(clients.claim());
 });
 
 self.addEventListener("fetch", function (event) {

@@ -35,7 +35,8 @@ export class CompilerService {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/proxy_worker.js', {scope : '/'});
     } else {
-      alert('Service worker not supported!');
+      alert('Service worker not supported! Please upgrade your browser.');
+      window.location.replace('https://www.google.com/chrome/browser/desktop/');
     }
   }
 
@@ -52,8 +53,10 @@ export class CompilerService {
       };
 
       if (!navigator.serviceWorker.controller) {
-        alert("Service worker not yet registered. Please refresh the page.");
-        console.log("service worker not available!");
+        alert(`Service worker is not yet registered!
+Attempting to reload the page.
+If the page does not reload, please reload manually.`);
+        window.location.reload(true);
         return;
       }
       navigator.serviceWorker.controller.postMessage(message,
@@ -69,13 +72,13 @@ export class CompilerService {
       break;
 
     case WorkerMessageType.COMPILATION_END:
-      console.log('Main thread received COMPILATION_END message!');
+      // console.log('Main thread received COMPILATION_END message!');
       const compiled_fs = message.data.data;
       this.compilationResolve(compiled_fs);
       break;
 
     case WorkerMessageType.COMPILATION_ERROR:
-      console.error('COMPILATION_ERROR!');
+      // console.error('COMPILATION_ERROR!');
       this.compilationReject(message.data.data);
       break;
     }
@@ -95,7 +98,7 @@ export class CompilerService {
     this.snackBar.open('Compiling...', 'Dismiss');
     this.dispatchCompilation(filesToCompile)
         .then((compiledBundle: FileSystem) => {
-          console.log("compilation resolve!");
+          // console.log("compilation resolve!");
           const filenames = Object.keys(filesToCompile);
           for (const filename of filenames) {
             if (filename.indexOf('/dist/') !== 0) {
@@ -104,7 +107,7 @@ export class CompilerService {
             }
           }
           this.messageServiceWorker(compiledBundle).then((r: any) => {
-            console.log("received message from service worker!");
+            // console.log("received message from service worker!");
             if (r.ack) {
               this.compileSuccessSubject.next(compiledBundle);
             }
