@@ -67,12 +67,10 @@ export class MonacoRawComponent implements OnInit {
 
     this._blankModel = monaco.editor.createModel('', '', '');
 
-    this._editor = monaco.editor.create(
-      myDiv, {
-        model : this._monacoModel,
-        minimap : {enabled : false},
-      }
-    );
+    this._editor = monaco.editor.create(myDiv, {
+      model : this._monacoModel,
+      minimap : {enabled : false},
+    });
 
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target : monaco.languages.typescript.ScriptTarget.ES2015,

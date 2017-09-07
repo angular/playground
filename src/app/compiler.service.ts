@@ -41,7 +41,7 @@ export class CompilerService {
   }
 
   private messageServiceWorker(message: any) {
-    console.log("messaging service worker!");
+    console.log('messaging service worker!');
     return new Promise(function(resolve, reject) {
       const messageChannel = new MessageChannel();
       messageChannel.port1.onmessage = function(event) {
