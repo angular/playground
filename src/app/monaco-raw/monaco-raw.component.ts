@@ -23,7 +23,7 @@ export class MonacoRawComponent implements OnInit {
   @Input()
   set model(_model: any) {
 
-    this._monacoModel = _model;
+    this._monacoModel = _model || this._blankModel;
 
     if (this._editor) {
       this._editor.setModel(this._monacoModel);
@@ -37,6 +37,7 @@ export class MonacoRawComponent implements OnInit {
   @ViewChild('editor') editorContent: ElementRef;
   private _monacoModel: any;
   private _editor: any;
+  private _blankModel: any;
 
   constructor(private http: Http) {}
 
@@ -64,8 +65,14 @@ export class MonacoRawComponent implements OnInit {
     window['monaco'] = monaco;
     const myDiv: HTMLDivElement = this.editorContent.nativeElement;
 
+    this._blankModel = monaco.editor.createModel('', '', '');
+
     this._editor = monaco.editor.create(
-        myDiv, {model : this._monacoModel, minimap : {enabled : false}});
+      myDiv, {
+        model : this._monacoModel,
+        minimap : {enabled : false},
+      }
+    );
 
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target : monaco.languages.typescript.ScriptTarget.ES2015,
@@ -107,7 +114,7 @@ export class MonacoRawComponent implements OnInit {
       this._editor.getModel().onDidChangeContent((e: Event) => {
         const value = this._editor.getModel().getValue();
         this.change.emit(value);
-      })
+      });
     }
   }
 }

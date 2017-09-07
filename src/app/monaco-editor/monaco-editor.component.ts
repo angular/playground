@@ -98,9 +98,16 @@ export class MonacoEditorComponent {
 
         this.tabs.splice(i, 1);
 
-        if (this.currentTab && this.currentTab.filename === curFname) {
+        console.log(this.tabs);
+
+        if (this.tabs.length === 0) {
+          this.currentTab = null;
+          console.log('set current tab to null!');
+        }
+        else if (this.currentTab && this.currentTab.filename === curFname) {
           this.currentTab = this.tabs[0];
         }
+
 
         return;
       }
