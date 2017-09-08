@@ -111,9 +111,8 @@ export class VirtualFsService {
       this.updateUrlWorker();
     }
 
-    clearTimeout(this.compileTimeout);
-    this.compileTimeout = setTimeout(
-        () => { this.compilerService.compile(this.getFsBundle()); }, 500);
+    // kick off compilation
+    this.compilerService.compile(this.getFsBundle());
 
     if (dontUpdateModel) {
       return;

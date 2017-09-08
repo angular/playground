@@ -27,6 +27,8 @@ export class MonacoEditorComponent {
   fileErrorMessages: any[] = [];
   tabs: TabState[] = [];
 
+  private writeTimeout: any;
+
   constructor(public fsService: VirtualFsService,
               private tabControlService: TabControlService,
               private errorHandler: ErrorHandlerService) {
@@ -52,9 +54,13 @@ export class MonacoEditorComponent {
       return;
     }
 
-    if (this.currentTab) {
-      this.fsService.writeFile(this.currentTab.filename, value, false, true);
-    }
+    clearTimeout(this.writeTimeout);
+    this.writeTimeout = setTimeout(
+        () => {
+          if (this.currentTab) {
+            this.fsService.writeFile(this.currentTab.filename, value, false, true);
+          }
+        }, 500);
   }
 
   monacoInitialized(event: Event) { this.fsService.initialize(); }
