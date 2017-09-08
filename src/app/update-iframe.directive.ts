@@ -25,12 +25,13 @@ export class UpdateIframeDirective implements OnChanges {
       container.removeChild(container.lastChild);
     }
 
+    const iframe = document.createElement('iframe');
     if (generatedBundle.fileSystem) {
-      const iframe = document.createElement('iframe');
+      // this will get loaded from the service worker
       iframe.src = '/dist/index.html';
-      iframe.style.cssText = 'width: 100%';
-      container.appendChild(iframe);
     }
+    iframe.style.cssText = 'width: 100%';
+    container.appendChild(iframe);
   }
 
   ngOnChanges(changes: SimpleChanges) {
