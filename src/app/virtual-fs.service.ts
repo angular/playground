@@ -103,6 +103,8 @@ export class VirtualFsService {
   writeFile(filename: string, fileContents: string, dontUpdateUrl?: boolean,
             dontUpdateModel?: boolean): void {
 
+    console.log(`writing file ${filename}!`);
+    console.log(this.monacoModels);
     fs.writeFileSync(filename, fileContents);
 
     if (!dontUpdateUrl) {
@@ -119,14 +121,17 @@ export class VirtualFsService {
 
     // set the monaco models
     if (!(this.monacoModels[filename])) {
+      console.log('creating a new model!');
       const uri = new monaco.Uri();
-      uri._path = uri._fsPath = filename;
+      uri._path = uri._fsPath = uri.path = filename;
+      console.log(uri);
+      console.log(filename);
       const model = monaco.editor.createModel(
-          '', this.getLanguageFromFilename(filename), uri);
+          fileContents, this.getLanguageFromFilename(filename), uri);
 
       this.monacoModels[filename] = model;
     }
-
+    console.log('setting file contents!');
     this.monacoModels[filename].setValue(fileContents);
   }
 
@@ -211,7 +216,7 @@ export class VirtualFsService {
 
   private writeDefaultContent() {
     this.writeFile('/component.ts', componentDefault);
-
+    console.log('finished writing component.ts!');
     this.writeFile('/component.ng.html', templateDefault);
 
     this.writeFile('/styles.css', '');

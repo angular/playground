@@ -6,6 +6,10 @@ set -e # exit on error
 newline="\n"
 cwd=$(pwd)
 
+echo "===========COPYING IN MONACO DEPENDENCIES============"
+cp -r node_modules/monaco-editor/dev/vs src/assets/monaco/
+echo "SUCCESS!"
+
 echo "=====BUILDING FILE SYSTEM=========="
 node_modules/typescript/bin/tsc -p src/assets/fs
 cd src/assets/fs
