@@ -118,7 +118,19 @@ function readConfiguration(project, basePath, files) {
 // cache old program used in compilation
 let oldProgram = undefined;
 
-function compile(fileBundle) {
+// queue of stuff to compile
+let compileQ = [];
+
+function compile() {
+  // if there's nothing in the queue, return
+  if (compileQ.length == 0) {
+    return;
+  }
+
+  // pop out the most recent thing to compile and clear the queue
+  var fileBundle = compileQ.pop();
+  compileQ = [];
+
   // delete everything that's not a dependency - gotta do this or weird things happen
   let files = fs.vfs.getFileList();
   for (i in files) {
@@ -175,10 +187,13 @@ function compile(fileBundle) {
   }
 }
 
-function handleMessage(data) {
-  switch (data.type) {
+function handleMessage(message) {
+  switch (message.type) {
     case COMPILATION_START:
-      compile(data.data);
+      compileQ.push(message.data);
+      setTimeout(function() {
+        compile();
+      }, 0);
       break;
     default:
       break;
