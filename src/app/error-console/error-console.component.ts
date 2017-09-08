@@ -55,8 +55,11 @@ export class ErrorConsoleComponent {
         </md-list-item>
       </md-list>
     </md-card>
-
-  `
+  `,
+  styles: [
+    'md-card {padding: 12px 24px}',
+    'md-card-title {margin-bottom: 8px; font-size: 18px;}'
+  ]
 })
 export class ErrorDisplayComponent {
   @Input() error: ConsoleErrorMessage;
