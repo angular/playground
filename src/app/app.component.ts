@@ -33,6 +33,7 @@ export class AppComponent {
 
     this.compilerService.compileFailedSubject.subscribe(
         (diagnostics: any[]) => {
+          this.generatedBundle = {};
           this.snackBar.open('Compilation Failed!', 'Dismiss');
           this.errorHandler.receiveDiagnostics(diagnostics);
         });

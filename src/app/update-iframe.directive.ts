@@ -20,16 +20,17 @@ export class UpdateIframeDirective implements OnChanges {
               private fsService: VirtualFsService, private http: Http) {}
 
   private updateIFrame(generatedBundle: FileSystem) {
-    const files: string[] = Object.keys(generatedBundle.fileSystem);
-
     const container = this.iframeContainer.nativeElement;
     while (container.hasChildNodes()) {
       container.removeChild(container.lastChild);
     }
-    const iframe = document.createElement('iframe');
-    iframe.src = '/dist/index.html';
-    iframe.style.cssText = 'width: 100%';
-    container.appendChild(iframe);
+
+    if (generatedBundle.fileSystem) {
+      const iframe = document.createElement('iframe');
+      iframe.src = '/dist/index.html';
+      iframe.style.cssText = 'width: 100%';
+      container.appendChild(iframe);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
