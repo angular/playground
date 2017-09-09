@@ -115,7 +115,7 @@ If the page does not reload, please reload manually.`);
     if (!this.isCompilationInProgress) {
       this.dispatchCompilation(filesToCompile)
         .then((compiledBundle: FileSystem) => {
-          console.log("compilation resolve!", compiledBundle);
+          console.log('compilation resolve!', compiledBundle);
           const filenames = Object.keys(filesToCompile);
           for (const filename of filenames) {
             if (filename.indexOf('/dist/') !== 0) {
@@ -124,7 +124,7 @@ If the page does not reload, please reload manually.`);
             }
           }
           this.messageServiceWorker(compiledBundle).then((r: any) => {
-            console.log("received message from service worker!");
+            console.log('received message from service worker!');
             if (r.ack) {
               this.compileSuccessSubject.next(compiledBundle);
               this.onCompilationComplete();
