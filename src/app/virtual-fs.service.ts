@@ -101,7 +101,7 @@ export class VirtualFsService {
   }
 
   writeFile(filename: string, fileContents: string, dontUpdateUrl?: boolean,
-            dontUpdateModel?: boolean): void {
+            dontUpdateModel?: boolean, dontCompile?: boolean): void {
 
     console.log(`writing file ${filename}!`);
     console.log(this.monacoModels);
@@ -111,8 +111,10 @@ export class VirtualFsService {
       this.updateUrlWorker();
     }
 
-    // kick off compilation
-    this.compilerService.compile(this.getFsBundle());
+    if (!dontCompile) {
+      // kick off compilation
+      this.compilerService.compile(this.getFsBundle());
+    }
 
     if (dontUpdateModel) {
       return;
@@ -211,10 +213,10 @@ export class VirtualFsService {
   getFileList() { return fs.vfs.getFileList(); }
 
   private writeDefaultContent() {
-    this.writeFile('/component.ts', componentDefault);
-    this.writeFile('/component.ng.html', templateDefault);
+    this.writeFile('/component.ng.html', templateDefault, false, false, true);
+    this.writeFile('/component.ts', componentDefault, false, false, true);
 
-    this.writeFile('/styles.css', '');
+    this.writeFile('/styles.css', '', false, false, true);
 
     this.writeFile('/index.html', `<html>
 <head>
@@ -317,7 +319,7 @@ export class VirtualFsService {
       .catch(console.error.bind(console));
   </script>
 </body>
-</html>`);
+</html>`, false, false, true);
 
     this.writeFile('/main.ts', mainDefault);
 

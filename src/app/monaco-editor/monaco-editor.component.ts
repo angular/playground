@@ -60,7 +60,7 @@ export class MonacoEditorComponent {
           if (this.currentTab) {
             this.fsService.writeFile(this.currentTab.filename, value, false, true);
           }
-        }, 500);
+        }, 1000);
   }
 
   monacoInitialized(event: Event) { this.fsService.initialize(); }

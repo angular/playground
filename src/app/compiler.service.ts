@@ -25,6 +25,9 @@ export class CompilerService {
   public compileSuccessSubject = new Subject();
   public compileFailedSubject = new Subject();
 
+  private isCompilationInProgress = false;
+  private queuedCompilation: FsInterface | null;
+
   compilerWorker: Worker;
 
   constructor(private http: HttpClient, public snackBar: MdSnackBar) {
@@ -65,6 +68,7 @@ If the page does not reload, please reload manually.`);
   }
 
   private handleWorkerMessage(message: any) {
+    console.log(message);
     switch (message.data.type) {
     case WorkerMessageType.COMPILATION_START:
       console.error(
@@ -86,6 +90,7 @@ If the page does not reload, please reload manually.`);
 
   private dispatchCompilation(filesToCompile: FsInterface) {
     return new Promise((resolve, reject) => {
+      this.isCompilationInProgress = true;
       this.compilerWorker.postMessage(
           {type : WorkerMessageType.COMPILATION_START, data : filesToCompile});
 
@@ -94,11 +99,23 @@ If the page does not reload, please reload manually.`);
     });
   }
 
+  private onCompilationComplete() {
+    this.isCompilationInProgress = false;
+    const toCompile = this.queuedCompilation;
+    this.queuedCompilation = null;
+
+    // if we have a queued compilation, then run it
+    if (toCompile) {
+      this.compile(toCompile);
+    }
+  }
+
   compile(filesToCompile: FsInterface) {
     this.snackBar.open('Compiling...', 'Dismiss');
-    this.dispatchCompilation(filesToCompile)
+    if (!this.isCompilationInProgress) {
+      this.dispatchCompilation(filesToCompile)
         .then((compiledBundle: FileSystem) => {
-          // console.log("compilation resolve!");
+          console.log("compilation resolve!", compiledBundle);
           const filenames = Object.keys(filesToCompile);
           for (const filename of filenames) {
             if (filename.indexOf('/dist/') !== 0) {
@@ -107,12 +124,21 @@ If the page does not reload, please reload manually.`);
             }
           }
           this.messageServiceWorker(compiledBundle).then((r: any) => {
-            // console.log("received message from service worker!");
+            console.log("received message from service worker!");
             if (r.ack) {
               this.compileSuccessSubject.next(compiledBundle);
+              this.onCompilationComplete();
             }
           });
         })
-        .catch((diagnostics) => this.compileFailedSubject.next(diagnostics));
+        .catch((diagnostics) => {
+          this.onCompilationComplete();
+          this.compileFailedSubject.next(diagnostics)
+        });
+    } else {
+      this.queuedCompilation = filesToCompile;
+    }
+
+
   }
 }
