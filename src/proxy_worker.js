@@ -1,6 +1,7 @@
 var fileSystem;
 
 self.addEventListener('install', function (event) {
+  console.log('install event!');
 });
 
 self.addEventListener('activate', function (event) {
@@ -31,6 +32,35 @@ self.addEventListener("fetch", function (event) {
       event.respondWith(response);
       return;
     }
+  }
+
+  /*  if we're an ngfactory file, we have to route to the file system
+      This is a hack to get around the current SystemJS config.
+      The compiled template can reference an ngfactory file compiled from a
+      dependency (e.g. @angular/material). With the current SystemJS config
+      (see the default /index.html file written in virtual-fs.service.ts), SystemJS
+      attempts to resolve these ngfactory files from unpkg, rather than from
+      some rewritten location that allows the previous /dist/ rule to load it
+      from the virtual file system.
+
+      TODO: Modify the default SystemJS config  written in virtual-fs.service.ts
+      to properly load ngfactory files from a /dist/ location, rather than from unpkg.
+      Rob Wormald (robwormald@) is probably the person to ask for help on this
+    */
+
+  if (event.request.url.indexOf("ngfactory") >= 0) {
+    const path = event.request.url.split("/").slice(3);
+    let i;
+    for(i = 0; i < path.length; i++) { if (path[i].indexOf(".umd.js") >= 0) break; }
+    const resolvedParts = path.slice(0,2).concat(path.slice(i + 1));
+    const resolved = "/dist/node_modules/" + resolvedParts.join("/") + ".js";
+    let init = {
+      status: 200,
+      statusText: "OK"
+    }
+    let response = new Response(fileSystem[resolved].text, init);
+    event.respondWith(response);
+    return;
   }
 
   // if we're an unpkg dependency, cache it
