@@ -70,6 +70,7 @@ export class MonacoRawComponent implements OnInit {
     this._editor = monaco.editor.create(myDiv, {
       model : this._monacoModel,
       minimap : {enabled : false},
+      automaticLayout: true,
     });
 
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
