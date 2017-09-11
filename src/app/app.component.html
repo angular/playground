@@ -7,11 +7,12 @@
     <app-file-viewer [hierarchicalFs]="fsService.getHierarchicalFs()">
     </app-file-viewer>
   </md-sidenav>
-  <div class="container">
-    <div class="half">
+  <div class="container" id="container">
+    <div class="half" id="monaco">
       <app-monaco-editor></app-monaco-editor>
     </div>
-    <div class="half" #iframeContainer [appUpdateIframe]="generatedBundle">
+    <div id="resizerX" style="width: 5px; height:100%; background: #ccc; float: right;"></div>
+    <div class="half" #iframeContainer [appUpdateIframe]="generatedBundle" id="display">
       <iframe></iframe>
     </div>
   </div>
