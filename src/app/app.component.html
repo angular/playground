@@ -2,7 +2,7 @@
   <span>{{title}}</span>
 </md-toolbar>
 
-<md-sidenav-container>
+<md-sidenav-container [class]="errorClass">
   <md-sidenav>
     <app-file-viewer [hierarchicalFs]="fsService.getHierarchicalFs()">
     </app-file-viewer>
@@ -18,4 +18,4 @@
   </div>
 </md-sidenav-container>
 
-<app-error-console></app-error-console>
+<app-error-console [class]="errorClass"></app-error-console>

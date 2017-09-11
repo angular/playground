@@ -18,6 +18,12 @@ md-sidenav-container {
   -webkit-flex-wrap: nowrap;
   flex-wrap: nowrap;
   height: 80%;
+  -webkit-transition: height 0.5s;
+  transition: height 0.5s;
+}
+
+md-sidenav-container.no-errors {
+  height: 100%;
 }
 
 md-sidenav-container md-sidenav {
@@ -49,6 +55,12 @@ app-error-console {
   font-family: monospace;
   overflow-y: scroll;
   overflow-x: hidden;
+  -webkit-transition: height 0.5s;
+  transition: height 0.5s;
+}
+
+app-error-console.no-errors {
+  height: 0;
 }
 
 app-monaco-editor {

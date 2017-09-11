@@ -93,6 +93,8 @@ export class AppComponent {
 
   generatedBundle: FsInterface;
 
+  errorClass = 'no-errors';
+
   constructor(public fsService: VirtualFsService,
     private compilerService: CompilerService,
     private errorHandler: ErrorHandlerService,
@@ -103,6 +105,7 @@ export class AppComponent {
         this.generatedBundle = compiledBundle;
         this.snackBar.open('Compilation Successful!', 'Dismiss');
         this.errorHandler.receiveDiagnostics([]);
+        this.errorClass = 'no-errors';
       });
 
     this.compilerService.compileFailedSubject.subscribe(
@@ -110,6 +113,7 @@ export class AppComponent {
         this.generatedBundle = {};
         this.snackBar.open('Compilation Failed!', 'Dismiss');
         this.errorHandler.receiveDiagnostics(diagnostics);
+        this.errorClass = '';
       });
   }
 }
