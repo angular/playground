@@ -60,7 +60,7 @@ function resizerXY(resizerID: any, mousemove: any) {
   resizer(resizerID, mousemove, 'ne-resize');
 }
 
-function resizeX(x: any) {
+function resizeXInner(x: any) {
   const displayFrame: any = document.getElementById('display');
   const monacoContainer = document.getElementById('monaco');
   const container = document.getElementById('container');
@@ -74,11 +74,23 @@ function resizeX(x: any) {
   monacoContainer.style.width = (100 - percent) + '%';
 }
 
+function resizeXOuter(x: any) {
+  const sidenav: any = document.getElementById('sidenav');
+  const content: any = document.getElementById('container');
+  const container: any = document.getElementById('sidenav-container');
+  if (!sidenav || !content || !container) {
+    return;
+  }
+  const widthPx = content.parentElement.clientWidth + container.offsetLeft - x;
+  const percent = (widthPx / container.offsetWidth) * 100;
+  content.style.width = percent + '%';
+  sidenav.style.width = (100 - percent) + '%';
+}
+
 window.onload =
   function () {
-    resizerX('resizerX', function (e: any) { resizeX(e.pageX + 25); });
-
-    console.log(resizerX);
+    resizerX('resizerXInner', function (e: any) { resizeXInner(e.pageX + 25); });
+    resizerX('resizerXOuter', function (e: any) { resizeXOuter(e.pageX + 25); });
   }
 
 @Component({

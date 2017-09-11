@@ -2,16 +2,17 @@
   <span>{{title}}</span>
 </md-toolbar>
 
-<md-sidenav-container [class]="errorClass">
-  <md-sidenav>
+<md-sidenav-container [class]="errorClass" id="sidenav-container">
+  <md-sidenav id="sidenav">
     <app-file-viewer [hierarchicalFs]="fsService.getHierarchicalFs()">
     </app-file-viewer>
   </md-sidenav>
+    <div id="resizerXOuter" style="width: 5px; height:100%; background: #ccc; float: right;"></div>
   <div class="container" id="container">
     <div class="half" id="monaco">
       <app-monaco-editor></app-monaco-editor>
     </div>
-    <div id="resizerX" style="width: 5px; height:100%; background: #ccc; float: right;"></div>
+    <div id="resizerXInner" style="width: 5px; height:100%; background: #ccc; float: right;"></div>
     <div class="half" #iframeContainer [appUpdateIframe]="generatedBundle" id="display">
       <iframe></iframe>
     </div>
