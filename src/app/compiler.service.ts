@@ -110,6 +110,10 @@ If the page does not reload, please reload manually.`);
     }
   }
 
+  currentlyCompiling(): boolean {
+    return this.isCompilationInProgress;
+  }
+
   compile(filesToCompile: FsInterface) {
     this.snackBar.open('Compiling...', 'Dismiss');
     if (!this.isCompilationInProgress) {

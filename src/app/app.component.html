@@ -1,5 +1,7 @@
 <md-toolbar color="primary">
   <span>{{title}}</span>
+  <span class="fill-remaining-space"></span>
+  <md-spinner color="accent" *ngIf="compilerService.currentlyCompiling()"></md-spinner>
 </md-toolbar>
 
 <md-sidenav-container [class]="errorClass" id="sidenav-container">

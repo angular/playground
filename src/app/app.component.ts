@@ -108,7 +108,7 @@ export class AppComponent {
   errorClass = 'no-errors';
 
   constructor(public fsService: VirtualFsService,
-    private compilerService: CompilerService,
+    public compilerService: CompilerService,
     private errorHandler: ErrorHandlerService,
     private snackBar: MdSnackBar) {
     this.compilerService.compileSuccessSubject.subscribe(

@@ -73,3 +73,7 @@ div.half iframe {
   width: 100%;
   border: 1px solid grey;
 }
+
+md-spinner {
+  height: 50%;
+}

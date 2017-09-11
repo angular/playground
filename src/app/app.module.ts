@@ -10,7 +10,8 @@ import {
   MdSidenavModule,
   MdSnackBarModule,
   MdTabsModule,
-  MdToolbarModule
+  MdToolbarModule,
+  MdProgressSpinnerModule
 } from '@angular/material';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -36,7 +37,8 @@ import {VirtualFsService} from './virtual-fs.service';
   imports : [
     BrowserModule, MdToolbarModule, MdButtonModule, MdTabsModule,
     MdSnackBarModule, BrowserAnimationsModule, FileViewerModule, SharedModule,
-    MdIconModule, HttpClientModule, HttpModule, MdListModule, MdCardModule
+    MdIconModule, HttpClientModule, HttpModule, MdListModule, MdCardModule,
+    MdProgressSpinnerModule
   ],
   providers : [
     VirtualFsService,
