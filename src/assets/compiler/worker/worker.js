@@ -14,49 +14,29 @@ importScripts('../BrowserCompilerHost.js');
 importScripts('https://google.github.io/traceur-compiler/bin/traceur.js');
 importScripts('https://unpkg.com/rollup@0.45.2/dist/rollup.browser.js');
 
-function get(url) {
-  try {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, false);
-    xhr.send();
-    return xhr.responseText;
-  } catch (e) {
-    return ''; // turn all errors into empty results
-  }
-}
-
-// necessary globals
-var port;
-var window;
-
 function instantiate() {
-
-  let vfs = fs.vfs;
   // get the compiler dependency bundle
-
   var xhr = new XMLHttpRequest();
   xhr.open('GET', `${baseAssetsPath}/built/compiler_bundle.json`, false);
   xhr.send();
   fs.loadFilesIntoFileSystem(JSON.parse(xhr.responseText));
+
+  // once the compiler dependency bundle is loaded, load the actual compiler
   importScripts('../built/browser-bundle.umd.js');
+
+  // send a message that we are ready to compile
   postMessage({
     type: INSTANTIATON_COMPLETE,
     data: "",
   });
 }
 
-function readConfiguration(project, basePath, files) {
+function readConfiguration(files) {
+  const project = ".";
+  const basePath = "/";
   let existingOptions = {};
 
   const virtualFsFileReader = (path) => fs.readFileSync(path);
-
-  /*
-  TODO: having exclude[] in tsconfig leads to inefficient compilation,
-        because it then requires that parseConfigHost.readDirectory gets
-        called. this has to filter through every file in the file system,
-        and as such leads to a lot of overhead on compilation.
-
-  */
 
   let tsconfig = `
     {
@@ -85,28 +65,12 @@ function readConfiguration(project, basePath, files) {
   const parseConfigHost = {
     useCaseSensitiveFileNames: true,
     fileExists: fs.fileExists,
-    readDirectory: (basePath, supportedExtensions, exclude, include) => {
-      let files = Object.keys(fs.vfs.fileSystem).filter(filename => {
-        // check that the extension is valid
-        let valid_extension = false;
-        for (let i = 0; i < supportedExtensions.length; i++) {
-          if (filename.indexOf(supportedExtensions[i]) != -1) {
-            valid_extension = true;
-            break;
-          }
-        }
-        return valid_extension;
-      });
-      return files;
-    },
+    readDirectory: () => [],
     readFile: virtualFsFileReader
   };
   const parsed = ts.parseJsonConfigFileContent(config, parseConfigHost, basePath, existingOptions);
 
-  // Default codegen goes to the current directory
-  // Parsed options are already converted to absolute paths
   const ngOptions = config.angularCompilerOptions || {};
-  // Ignore the genDir option
   ngOptions.genDir = basePath;
   for (const key of Object.keys(parsed.options)) {
     ngOptions[key] = parsed.options[key];
@@ -136,7 +100,7 @@ function compile(fileBundle) {
   files = files.filter(s => (s.endsWith(".ts") || s.endsWith(".tsx") || s.endsWith(".d.ts")));
 
   const ngc = ng.compiler_cli_browser;
-  const config = readConfiguration(".", "/", files);
+  const config = readConfiguration(files);
   const host = ngc.createCompilerHost({
     options: config.ngOptions,
     tsHost: new BrowserCompilerHost
