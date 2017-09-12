@@ -43,7 +43,7 @@ export class ErrorHandlerService {
 
     return {
       filename : filename,
-      line : lineNumber,
+      line : lineNumber + 1,
       character : characterNumber,
       message : String(message)
     };
