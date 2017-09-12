@@ -248,6 +248,7 @@ export class VirtualFsService {
       //map tells the System loader where to look for things
       map: {
         'app': '',
+        'plugin-json': '/assets/systemJS/load-json.js',
         '@angular/core': 'npm:@angular/core'+ angularVersion + '/bundles/core.umd.js',
         '@angular/common': 'npm:@angular/common' + angularVersion + '/bundles/common.umd.js',
         '@angular/compiler': 'npm:@angular/compiler'
@@ -307,6 +308,10 @@ export class VirtualFsService {
         },
         rxjs: {
           defaultExtension: 'js'
+        },
+        meta: {
+          '*.json': { loader: 'plugin-json' },
+          '*.ngsummary': { loader: 'plugin-json' },
         }
       }
     });

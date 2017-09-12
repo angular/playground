@@ -16,6 +16,9 @@ self.addEventListener("fetch", function (event) {
   var loc = event.request.url.indexOf("/dist/");
   if (loc != -1) {
     var path = event.request.url.slice(loc);
+    if (path.indexOf("ngsummary") >= 0 &&  path.indexOf(".js") == -1) {
+      path += ".json";
+    }
     if (fileSystem && fileSystem[path]) {
 
       let init = {
@@ -48,16 +51,29 @@ self.addEventListener("fetch", function (event) {
       Rob Wormald (robwormald@) is probably the person to ask for help on this
     */
 
-  if (event.request.url.indexOf("ngfactory") >= 0) {
+  if (event.request.url.indexOf("ngfactory") >= 0 || event.request.url.indexOf("ngsummary") >= 0) {
     const path = event.request.url.split("/").slice(3);
     let i;
     for(i = 0; i < path.length; i++) { if (path[i].indexOf(".umd.js") >= 0) break; }
     const resolvedParts = path.slice(0,2).concat(path.slice(i + 1));
-    const resolved = "/dist/node_modules/" + resolvedParts.join("/") + ".js";
+
+    for(i = 0; i < resolvedParts.length; i++) {if (path[i] === "@angular") break;}
+    const moduleNameIndex = i + 1;
+    resolvedParts[moduleNameIndex] = resolvedParts[moduleNameIndex].split("@")[0];
+
     let init = {
       status: 200,
       statusText: "OK"
     }
+
+    let resolved = "/dist/node_modules/" + resolvedParts.join("/");
+
+    if (event.request.url.indexOf("ngfactory") >= 0) {
+      resolved += ".js";
+    } else if (event.request.url.indexOf("ngsummary") >= 0) {
+      resolved += ".json";
+    }
+
     let response = new Response(fileSystem[resolved].text, init);
     event.respondWith(response);
     return;
