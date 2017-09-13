@@ -1,5 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
-import { MdSnackBar } from '@angular/material';
+import { Component, ViewChild, ChangeDetectorRef} from '@angular/core';
 
 import { FileSystem, FsInterface } from '../assets/fs/vfs';
 
@@ -110,20 +109,25 @@ export class AppComponent {
   constructor(public fsService: VirtualFsService,
     public compilerService: CompilerService,
     private errorHandler: ErrorHandlerService,
-    private snackBar: MdSnackBar) {
+    private cdRef: ChangeDetectorRef) {
     this.compilerService.compileSuccessSubject.subscribe(
       (compiledBundle: FsInterface) => {
         // console.log("Compilation successful!");
         this.generatedBundle = compiledBundle;
-        this.snackBar.open('Compilation Successful!', 'Dismiss');
         this.errorHandler.receiveDiagnostics([]);
         this.errorClass = 'no-errors';
+
+        // HACK: manually trigger change detection - without this, change detection
+        // does not fire for a while and thus the iframe does not update with the
+        // compiled file.
+        // TODO:  figure out real reason for this issue and fix that, rather than manually
+        //        triggering change detection
+        this.cdRef.detectChanges();
       });
 
     this.compilerService.compileFailedSubject.subscribe(
       (diagnostics: any[]) => {
         this.generatedBundle = {};
-        this.snackBar.open('Compilation Failed!', 'Dismiss');
         this.errorHandler.receiveDiagnostics(diagnostics);
         this.errorClass = '';
       });

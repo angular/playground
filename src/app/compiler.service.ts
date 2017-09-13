@@ -1,6 +1,5 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {MdSnackBar} from '@angular/material';
 import {Subject} from 'rxjs/Subject';
 
 import {FileSystem, FsInterface} from '../assets/fs/vfs';
@@ -30,7 +29,7 @@ export class CompilerService {
 
   compilerWorker: Worker;
 
-  constructor(private http: HttpClient, public snackBar: MdSnackBar) {
+  constructor(private http: HttpClient) {
     this.compilerWorker =
         new Worker('/assets/compiler/worker/browser-wrapper.js');
     this.compilerWorker.onmessage = this.handleWorkerMessage.bind(this);
@@ -115,7 +114,6 @@ If the page does not reload, please reload manually.`);
   }
 
   compile(filesToCompile: FsInterface) {
-    this.snackBar.open('Compiling...', 'Dismiss');
     if (!this.isCompilationInProgress) {
       this.dispatchCompilation(filesToCompile)
         .then((compiledBundle: FileSystem) => {

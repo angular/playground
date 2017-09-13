@@ -8,7 +8,6 @@ import {
   MdIconModule,
   MdListModule,
   MdSidenavModule,
-  MdSnackBarModule,
   MdTabsModule,
   MdToolbarModule,
   MdProgressSpinnerModule
@@ -36,7 +35,7 @@ import {VirtualFsService} from './virtual-fs.service';
   ],
   imports : [
     BrowserModule, MdToolbarModule, MdButtonModule, MdTabsModule,
-    MdSnackBarModule, BrowserAnimationsModule, FileViewerModule, SharedModule,
+    BrowserAnimationsModule, FileViewerModule, SharedModule,
     MdIconModule, HttpClientModule, HttpModule, MdListModule, MdCardModule,
     MdProgressSpinnerModule
   ],
