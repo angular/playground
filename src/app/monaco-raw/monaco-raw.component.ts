@@ -8,6 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {Headers, Http} from '@angular/http';
+import { CompilerService } from '../compiler.service';
 
 declare const monaco: any;
 
@@ -39,7 +40,7 @@ export class MonacoRawComponent implements OnInit {
   private _editor: any;
   private _blankModel: any;
 
-  constructor(private http: Http) {}
+  constructor(private http: Http, private compilerService: CompilerService) {}
 
   ngOnInit() {
     const onGotAmdLoader = () => {
@@ -102,6 +103,10 @@ export class MonacoRawComponent implements OnInit {
                 fileSystem[filename].text, '/' + filename);
           }
         });
+
+    this._editor.onKeyDown((e: Event) => {
+      this.compilerService.resetCompilationTimer();
+    });
 
     this.setContentChangeEmitter();
 

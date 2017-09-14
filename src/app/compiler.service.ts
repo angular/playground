@@ -1,8 +1,8 @@
-import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs/Subject';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
 
-import {FileSystem, FsInterface} from '../assets/fs/vfs';
+import { FileSystem, FsInterface } from '../assets/fs/vfs';
 
 export enum WorkerMessageType {
   COMPILATION_START,
@@ -18,7 +18,7 @@ interface WorkerMessage {
 @Injectable()
 export class CompilerService {
 
-  private compilationResolve: (value?: {}|PromiseLike<{}>) => void;
+  private compilationResolve: (value?: {} | PromiseLike<{}>) => void;
   private compilationReject: (reason?: any) => void;
 
   public compileSuccessSubject = new Subject();
@@ -26,16 +26,19 @@ export class CompilerService {
 
   private isCompilationInProgress = false;
   private queuedCompilation: FsInterface | null;
+  private bundleBeingCompiled: FsInterface | null;
+
+  private compilationTimer: any;
 
   compilerWorker: Worker;
 
   constructor(private http: HttpClient) {
     this.compilerWorker =
-        new Worker('/assets/compiler/worker/browser-wrapper.js');
+      new Worker('/assets/compiler/worker/browser-wrapper.js');
     this.compilerWorker.onmessage = this.handleWorkerMessage.bind(this);
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/proxy_worker.js', {scope : '/'});
+      navigator.serviceWorker.register('/proxy_worker.js', { scope: '/' });
     } else {
       alert('Service worker not supported! Please upgrade your browser.');
       window.location.replace('https://www.google.com/chrome/browser/desktop/');
@@ -44,9 +47,9 @@ export class CompilerService {
 
   private messageServiceWorker(message: any) {
     console.log('messaging service worker!');
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       const messageChannel = new MessageChannel();
-      messageChannel.port1.onmessage = function(event) {
+      messageChannel.port1.onmessage = function (event) {
         if (event.data.error) {
           reject(event.data.error);
         } else {
@@ -62,28 +65,28 @@ If the page does not reload, please reload manually.`);
         return;
       }
       navigator.serviceWorker.controller.postMessage(message,
-                                                     [ messageChannel.port2 ]);
+        [messageChannel.port2]);
     });
   }
 
   private handleWorkerMessage(message: any) {
     console.log(message);
     switch (message.data.type) {
-    case WorkerMessageType.COMPILATION_START:
-      console.error(
+      case WorkerMessageType.COMPILATION_START:
+        console.error(
           'Main thread received COMPILATION_START message - this shouldn\'t happen.');
-      break;
+        break;
 
-    case WorkerMessageType.COMPILATION_END:
-      // console.log('Main thread received COMPILATION_END message!');
-      const compiled_fs = message.data.data;
-      this.compilationResolve(compiled_fs);
-      break;
+      case WorkerMessageType.COMPILATION_END:
+        // console.log('Main thread received COMPILATION_END message!');
+        const compiled_fs = message.data.data;
+        this.compilationResolve(compiled_fs);
+        break;
 
-    case WorkerMessageType.COMPILATION_ERROR:
-      // console.error('COMPILATION_ERROR!');
-      this.compilationReject(message.data.data);
-      break;
+      case WorkerMessageType.COMPILATION_ERROR:
+        // console.error('COMPILATION_ERROR!');
+        this.compilationReject(message.data.data);
+        break;
     }
   }
 
@@ -91,7 +94,7 @@ If the page does not reload, please reload manually.`);
     return new Promise((resolve, reject) => {
       this.isCompilationInProgress = true;
       this.compilerWorker.postMessage(
-          {type : WorkerMessageType.COMPILATION_START, data : filesToCompile});
+        { type: WorkerMessageType.COMPILATION_START, data: filesToCompile });
 
       this.compilationResolve = resolve;
       this.compilationReject = reject;
@@ -102,6 +105,7 @@ If the page does not reload, please reload manually.`);
     this.isCompilationInProgress = false;
     const toCompile = this.queuedCompilation;
     this.queuedCompilation = null;
+    this.bundleBeingCompiled = null;
 
     // if we have a queued compilation, then run it
     if (toCompile) {
@@ -109,38 +113,50 @@ If the page does not reload, please reload manually.`);
     }
   }
 
+  private startCompilation(filesToCompile: FsInterface) {
+    this.dispatchCompilation(filesToCompile)
+      .then((compiledBundle: FileSystem) => {
+        console.log('compilation resolve!', compiledBundle);
+        const filenames = Object.keys(filesToCompile);
+        for (const filename of filenames) {
+          if (filename.indexOf('/dist/') !== 0) {
+            compiledBundle['fileSystem']['/dist' + filename] =
+              filesToCompile[filename];
+          }
+        }
+        this.messageServiceWorker(compiledBundle).then((r: any) => {
+          console.log('received message from service worker!');
+          if (r.ack) {
+            this.compileSuccessSubject.next(compiledBundle);
+            this.onCompilationComplete();
+          }
+        });
+      })
+      .catch((diagnostics) => {
+        this.onCompilationComplete();
+        this.compileFailedSubject.next(diagnostics)
+      });
+  }
+
   currentlyCompiling(): boolean {
     return this.isCompilationInProgress;
   }
 
+  resetCompilationTimer() {
+    if (this.bundleBeingCompiled) {
+      clearTimeout(this.compilationTimer);
+      this.compilationTimer = setTimeout(() => {this.startCompilation(<FsInterface> this.bundleBeingCompiled)}, 1000);
+    }
+  }
+
   compile(filesToCompile: FsInterface) {
     if (!this.isCompilationInProgress) {
-      this.dispatchCompilation(filesToCompile)
-        .then((compiledBundle: FileSystem) => {
-          console.log('compilation resolve!', compiledBundle);
-          const filenames = Object.keys(filesToCompile);
-          for (const filename of filenames) {
-            if (filename.indexOf('/dist/') !== 0) {
-              compiledBundle['fileSystem']['/dist' + filename] =
-                  filesToCompile[filename];
-            }
-          }
-          this.messageServiceWorker(compiledBundle).then((r: any) => {
-            console.log('received message from service worker!');
-            if (r.ack) {
-              this.compileSuccessSubject.next(compiledBundle);
-              this.onCompilationComplete();
-            }
-          });
-        })
-        .catch((diagnostics) => {
-          this.onCompilationComplete();
-          this.compileFailedSubject.next(diagnostics)
-        });
+      // debounce here
+      this.bundleBeingCompiled = filesToCompile;
+      clearTimeout(this.compilationTimer);
+      this.compilationTimer = setTimeout(() => {this.startCompilation(filesToCompile)}, 1000);
     } else {
       this.queuedCompilation = filesToCompile;
     }
-
-
   }
 }

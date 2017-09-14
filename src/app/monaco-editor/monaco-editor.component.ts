@@ -53,14 +53,9 @@ export class MonacoEditorComponent {
     if (typeof value === 'object') {
       return;
     }
-
-    clearTimeout(this.writeTimeout);
-    this.writeTimeout = setTimeout(
-        () => {
-          if (this.currentTab) {
-            this.fsService.writeFile(this.currentTab.filename, value, false, true);
-          }
-        }, 1000);
+    if (this.currentTab) {
+      this.fsService.writeFile(this.currentTab.filename, value, false, true);
+    }
   }
 
   monacoInitialized(event: Event) { this.fsService.initialize(); }
